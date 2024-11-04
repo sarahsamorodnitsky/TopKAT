@@ -1,7 +1,22 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://sarahsamorodnitsky.github.io/TopKAT/404.html</loc></url>
+<url><loc>https://sarahsamorodnitsky.github.io/TopKAT/LICENSE-text.html</loc></url>
+<url><loc>https://sarahsamorodnitsky.github.io/TopKAT/LICENSE.html</loc></url>
 <url><loc>https://sarahsamorodnitsky.github.io/TopKAT/authors.html</loc></url>
 <url><loc>https://sarahsamorodnitsky.github.io/TopKAT/index.html</loc></url>
+<url><loc>https://sarahsamorodnitsky.github.io/TopKAT/reference/TopKAT.html</loc></url>
+<url><loc>https://sarahsamorodnitsky.github.io/TopKAT/reference/cens.html</loc></url>
+<url><loc>https://sarahsamorodnitsky.github.io/TopKAT/reference/data1.df.html</loc></url>
+<url><loc>https://sarahsamorodnitsky.github.io/TopKAT/reference/data2.df.html</loc></url>
+<url><loc>https://sarahsamorodnitsky.github.io/TopKAT/reference/generate_connectivity.html</loc></url>
+<url><loc>https://sarahsamorodnitsky.github.io/TopKAT/reference/generate_rips.html</loc></url>
 <url><loc>https://sarahsamorodnitsky.github.io/TopKAT/reference/index.html</loc></url>
+<url><loc>https://sarahsamorodnitsky.github.io/TopKAT/reference/plot_cell_connections.html</loc></url>
+<url><loc>https://sarahsamorodnitsky.github.io/TopKAT/reference/plot_cells_with_scale.html</loc></url>
+<url><loc>https://sarahsamorodnitsky.github.io/TopKAT/reference/plot_persistence.html</loc></url>
+<url><loc>https://sarahsamorodnitsky.github.io/TopKAT/reference/rips_similarity_matrix.html</loc></url>
+<url><loc>https://sarahsamorodnitsky.github.io/TopKAT/reference/scale_importance.html</loc></url>
+<url><loc>https://sarahsamorodnitsky.github.io/TopKAT/reference/similarity_matrix.html</loc></url>
+<url><loc>https://sarahsamorodnitsky.github.io/TopKAT/reference/y.html</loc></url>
 </urlset>
 
