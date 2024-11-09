@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 In this vignette, we illustrate how to apply the `TopKAT` method to analyze cell-level imaging data. 
 
-The movation behind `TopKAT` is specifically the analysis of multiplexed spatial proteomics imaging, in which the phenotype and locations of cells is derived based on the spatial proteome. 
+The motivation behind `TopKAT` is specifically the analysis of multiplexed spatial proteomics imaging, in which the phenotype and locations of cells is derived based on the spatial proteome. 
 
 This vignette will rely on simulated point pattern data that includes contrived shapes, namely squares and circles. 
 
@@ -160,7 +160,7 @@ We can also examine how significant the results are for each linear combination 
 res$p.vals
 ```
 
-## Descriptive Analyses
+## Descriptive Post-Hoc Analyses
 
 So far, we have shown that there is a significant association between the geometric arrangements of cells in the images and survival. We can now explore which distances are most ``important" (i.e., significant) and assess which cell types are connected at this distance. 
 
