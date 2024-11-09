@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>TopKAT • TopKAT</title>
+<title>Applying TopKAT to Simulated Tissue Data • TopKAT</title>
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="TopKAT">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Applying TopKAT to Simulated Tissue Data">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -29,9 +29,9 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="active nav-item"><a class="nav-link" href="../articles/TopKAT.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/TopKAT.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
+<li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/example_sim_tissue.html">Applying TopKAT to Simulated Tissue Data</a></li>
@@ -63,11 +63,11 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>TopKAT</h1>
+      <h1>Applying TopKAT to Simulated Tissue Data</h1>
             
       
 
-      <div class="d-none name"><code>TopKAT.Rmd</code></div>
+      <div class="d-none name"><code>example_sim_tissue.Rmd</code></div>
     </div>
 
     
@@ -76,13 +76,10 @@
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>In this vignette, we illustrate how to apply the <code>TopKAT</code>
-method to analyze cell-level imaging data.</p>
-<p>The motivation behind <code>TopKAT</code> is specifically the
-analysis of multiplexed spatial proteomics imaging, in which the
-phenotype and locations of cells is derived based on the spatial
-proteome.</p>
-<p>This vignette will rely on simulated point pattern data that includes
-contrived shapes, namely squares and circles.</p>
+method to analyze cell-level imaging data. We simulated this data using
+the <code>scSpatialSIM</code> package to provide a more realistic
+example of applying <code>TopKAT</code> to imaging data with cell-level
+resolution.</p>
 </div>
 <div class="section level2">
 <h2 id="loading-in-the-data-and-plotting">Loading in the Data and Plotting<a class="anchor" aria-label="anchor" href="#loading-in-the-data-and-plotting"></a>
@@ -90,8 +87,7 @@ contrived shapes, namely squares and circles.</p>
 <p>We start by loading in the packages we will need in this vignette and
 our simulated data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Packages</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sarahsamorodnitsky.github.io/TopKAT/">TopKAT</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sarahsamorodnitsky.github.io/TopKAT/">TopKAT</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Registered S3 method overwritten by 'httr':</span></span>
 <span><span class="co">#&gt;   method         from  </span></span>
 <span><span class="co">#&gt;   print.response rmutil</span></span>
@@ -107,71 +103,63 @@ our simulated data.</p>
 <span><span class="co">#&gt;     myeloma</span></span>
 <span></span>
 <span><span class="co"># Load data</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">data1.df</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">data2.df</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># View the first few lines</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data1.df</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   PID id        x       y        type</span></span>
-<span><span class="co">#&gt; 1   1  1 41.48928 16.3068 cell type 3</span></span>
-<span><span class="co">#&gt; 2   1  1 42.48928 16.3068 cell type 2</span></span>
-<span><span class="co">#&gt; 3   1  1 43.48928 16.3068 cell type 2</span></span>
-<span><span class="co">#&gt; 4   1  1 44.48928 16.3068 cell type 4</span></span>
-<span><span class="co">#&gt; 5   1  1 45.48928 16.3068 cell type 3</span></span>
-<span><span class="co">#&gt; 6   1  1 46.48928 16.3068 cell type 3</span></span></code></pre></div>
-<p>As you can see, the data is organized so that each row corresponds to
-a cell within each image. The <code>PID</code> column refers to the
-sample or patient ID which, in this case, enumerates from <code>1</code>
-to <code>100</code>. The <code>id</code> column enumerates the image
-number within the sample since in many applications we have multiple
-images per patient. In this case, the <code>PID</code> and
-<code>id</code> columns are the same because we simulated a single image
-for each sample. The <code>x</code> and <code>y</code> columns denote
-the 2D coordinates of the cell locations. The <code>type</code> column
-contains a simulated type for each cell, ranging from
-<code>cell type 1</code> to <code>cell type 4</code>.</p>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data2.df</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   PID id        x         y        type</span></span>
+<span><span class="co">#&gt; 1   1  1 54.39235 99.700192 cell type 2</span></span>
+<span><span class="co">#&gt; 2   1  1 16.21411 56.966352 cell type 3</span></span>
+<span><span class="co">#&gt; 3   1  1 70.50213  2.342483 cell type 4</span></span>
+<span><span class="co">#&gt; 4   1  1 93.95205 19.413240 cell type 4</span></span>
+<span><span class="co">#&gt; 5   1  1 70.82572  7.031758 cell type 1</span></span>
+<span><span class="co">#&gt; 6   1  1 88.23047 37.269243 cell type 3</span></span></code></pre></div>
+<p>The data is organized in a similar manner as the simulated dataset
+used in the <code>Getting Started</code> vignette. The <code>PID</code>
+column refers to the sample or patient ID which, in this case,
+enumerates from <code>1</code> to <code>100</code>. The <code>id</code>
+column enumerates the image number within the sample since in many
+applications we have multiple images per patient. In this case, the
+<code>PID</code> and <code>id</code> columns are the same because we
+simulated a single image for each sample. The <code>x</code> and
+<code>y</code> columns denote the 2D coordinates of the cell locations.
+The <code>type</code> column contains a simulated type for each cell,
+ranging from <code>cell type 1</code> to <code>cell type 4</code>.</p>
 <p>To simulate this data, we split the 100 samples into two groups of
-50. For the first 50 samples, we generated random numbers of squares.
-For the latter 50, we generated random numbers of unit circles. For
-these two groups, we also simulated different survival outcomes. The
-outcomes were simulated from an exponential distribution with rates
-equal to
+50. We simulated 50 datasets from the <code>scSpatialSIM</code> package
+using the same set of parameters. We simulated two tissue types. We then
+split these two tissue types into the two groups. The outcomes were
+simulated as described in the <code>Getting Started</code> vignette – we
+simulated from an exponential distribution with rates equal to
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\log(2)</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>log</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">\log(2)/2</annotation></semantics></math>,
 respectively. We randomly censored 10% of samples.</p>
-<p>We plot the a handful of images to get a sense of the various shapes
-of cells. It is apparent that these images exhibit contrived shapes
-generated by the cells: in the top row of images, the cells are
-organized in squares whereas in the second row the cells are organized
-in loops. This was intentional in order to illustrate the process of
-detecting large connected components among the cells (squares, as in the
-first image) or large loops.</p>
+<p>We plot the a handful of images here to illustrate the spatial
+patterns among the cells.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plotting some images from the first 50</span></span>
-<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="va">data1.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, colour <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Sample 1"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="op">)</span></span>
 <span></span>
-<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="va">data1.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, colour <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Sample 2"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="va">data1.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">51</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">51</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, colour <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Sample 51"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="va">data1.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">52</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">52</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, colour <span class="op">=</span> <span class="va">type</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Sample 52"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Arrange the plots</span></span>
 <span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span>, <span class="va">p4</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="TopKAT_files/figure-html/plotting%20the%20data-1.png" width="768" style="display: block; margin: auto;"></p>
-</div>
-<div class="section level2">
-<h2 id="applying-topkat">Applying TopKAT<a class="anchor" aria-label="anchor" href="#applying-topkat"></a>
-</h2>
+<p><img src="example_sim_tissue_files/figure-html/plotting%20the%20data-1.png" width="768" style="display: block; margin: auto;">
+## Applying TopKAT</p>
 <p>The goal of TopKAT is to test whether images with similar geometric
 structures created by cells correspond to patients with similar outcomes
 (in this case, survival). The null hypothesis we wish to test is:</p>
@@ -183,46 +171,24 @@ There is an association between survival time and topological structure
 of cells</p>
 <p>If the TopKAT p-value is small, this is evidence against
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>H</mi><mn>0</mn></msub><annotation encoding="application/x-tex">H_0</annotation></semantics></math>.</p>
-<p>To apply TopKAT, we first need to (1) quantify the geometric
-arrangement of cells in each image using persistent homology and (2)
-calculate the similarity in geometric arrangements across images. The
-geometric structures we will quantify are connected components (degree-0
-homologies) and loops (degree-1 homologies). TopKAT compares images
-based on similarities in the quantity and size (i.e., lifespan) of these
-homologies. In other words, if two images have a similar number of
-connected components or loops and these shapes are also of similar
-sizes, they will be more similar than two images with differences in
-these attributes.</p>
-<p>To detect and quantify the size these homologies, we use a summary
-statistic known as a . The persistence diagram summarizes the number and
-size of connected components and loops. We will illustrate two examples
-of persistence diagrams below.</p>
-<p>The first step in using the <code>TopKAT</code> package is to
-calculate the kernel matrices which quantify the similarity between
-images. We will use the function <code>rips_similarity_matrix</code> to
-compute the kernel matrices. Note that we compute a separate kernel
-matrix for connected components and loops. In other words, we first
-compare the images on the basis of connected components and then on the
-basis of loops, yielding two matrices quantifying the pairwise
-similarities among the images. Later, in our kernel association test, we
-will aggregate across these matrices to yield an omnibus test of
-association.</p>
+<p>We first calculate the kernel matrices which quantify the similarity
+between images using the function <code>rips_similarity_matrix</code>.
+Note that we compute a separate kernel matrix for connected components
+and loops. In other words, we first compare the images on the basis of
+connected components and then on the basis of loops, yielding two
+matrices quantifying the pairwise similarities among the images. Later,
+in our kernel association test, we will aggregate across these matrices
+to yield an omnibus test of association.</p>
 <p>Below, we show how to calculate the kernel matrices using
 <code>rips_similarity_matrix</code> using a maximum radius of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>100</mn><annotation encoding="application/x-tex">100</annotation></semantics></math>.
 We chose this maximum radius since the images are of dimension
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>100</mn><mo>×</mo><mn>100</mn></mrow><annotation encoding="application/x-tex">100 \times 100</annotation></semantics></math>.
 There is no penalty for selecting a radius that exceeds the boundaries
-of the image. The quantification of persistent homology stops once all
-the cells are connected. Note that this may take up to several minutes
-to run, depending on the number of cells in each image.</p>
+of the image.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Compute the similarity matrix</span></span>
-<span><span class="va">simmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rips_similarity_matrix.html">rips_similarity_matrix</a></span><span class="op">(</span><span class="va">data1.df</span>, max.threshold <span class="op">=</span> <span class="fl">100</span>, print.progress <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><code>rips_similarity_matrix</code> returns two lists: (1)
-<code>K.list</code> which contains the two kernel matrices for the
-connected components and the loops and (2) <code>rips.list</code> which
-contains the persistence diagram for each image.</p>
+<span><span class="va">simmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rips_similarity_matrix.html">rips_similarity_matrix</a></span><span class="op">(</span><span class="va">data2.df</span>, max.threshold <span class="op">=</span> <span class="fl">100</span>, print.progress <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>We illustrate here two visualizations. First, we visualize the
 corresponding persistence diagrams for the four samples shown above.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -237,7 +203,7 @@ corresponding persistence diagrams for the four samples shown above.</p>
 <span></span>
 <span><span class="co"># Arrange the plots</span></span>
 <span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">pd1</span>, <span class="va">pd2</span>, <span class="va">pd3</span>, <span class="va">pd4</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="TopKAT_files/figure-html/example%20PDs-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="example_sim_tissue_files/figure-html/example%20PDs-1.png" width="768" style="display: block; margin: auto;"></p>
 <p>We also show a visualization of the kernel matrices to describe the
 similarities among the images. Note that the similarity values in the
 kernel matrices are not interpretable on their own and can only be used
@@ -264,7 +230,7 @@ to compare the similarities between two pairs of images.</p>
 <span></span>
 <span><span class="co"># Arrange the plots</span></span>
 <span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">K.cc</span>, <span class="va">K.loop</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="TopKAT_files/figure-html/visualize%20the%20kernel%20matrices-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="example_sim_tissue_files/figure-html/visualize%20the%20kernel%20matrices-1.png" width="768" style="display: block; margin: auto;"></p>
 <p>Finally, we can test for an association with survival given the
 kernel matrices we computed above. Since we have two kernel matrices, we
 may want to aggregate our association results across both homologies. We
@@ -276,7 +242,7 @@ in the following linear combination:</p>
 <p>$ K^{agg} = (1-) K_0 + K_1$</p>
 <p>We now apply TopKAT. As shown below, the TopKAT p-value is
 significant,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>×</mo><msup><mn>10</mn><mrow><mo>−</mo><mn>5</mn></mrow></msup></mrow><annotation encoding="application/x-tex">3\times 10^{-5}</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><msup><mn>10</mn><mrow><mo>−</mo><mn>5</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2\times 10^{-5}</annotation></semantics></math>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Applying TopKAT to the simulated data</span></span>
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/TopKAT.html">TopKAT</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="cn">NULL</span>, cens <span class="op">=</span> <span class="va">cens</span>,</span>
@@ -285,29 +251,20 @@ significant,
 <span></span>
 <span><span class="co"># Output the p-value</span></span>
 <span><span class="va">res</span><span class="op">$</span><span class="va">overall.pval</span></span>
-<span><span class="co">#&gt; [1] 3.443675e-05</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 2.431229e-05</span></span></code></pre></div>
 <p>We can also examine how significant the results are for each linear
 combination of kernel matrices:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span><span class="op">$</span><span class="va">p.vals</span></span>
 <span><span class="co">#&gt;      omega.0    omega.0.5      omega.1 </span></span>
-<span><span class="co">#&gt; 1.107707e-04 3.650099e-05 1.972696e-05</span></span></code></pre></div>
+<span><span class="co">#&gt; 2.575420e-05 2.422430e-05 2.310274e-05</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="descriptive-post-hoc-analyses">Descriptive Post-Hoc Analyses<a class="anchor" aria-label="anchor" href="#descriptive-post-hoc-analyses"></a>
 </h2>
-<p>So far, we have shown that there is a significant association between
-the geometric arrangements of cells in the images and survival. We can
-now explore which distances are most ``important” (i.e., significant)
-and assess which cell types are connected at this distance.</p>
-<p>To do this, we use the <code>scale_importance</code> function. This
-function iteratively runs <code>TopKAT</code> on an increasing sequence
-of radii and stores the resulting p-value at each radius. We will then
-examine the connections among the cells at this radius. We set the
-maximum radius (<code>threshold</code>) and the function will select a
-sequence of radii between
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>
-and <code>threshold</code> to run TopKAT at.</p>
+<p>We can now explore which distances are most “important” (i.e.,
+significant) and assess which cell types are connected at this distance
+using the <code>scale_importance</code> function.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res_scale_import</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scale_importance.html">scale_importance</a></span><span class="op">(</span>pd.list <span class="op">=</span> <span class="va">simmat</span><span class="op">$</span><span class="va">rips.list</span>,</span>
 <span>                                     y <span class="op">=</span> <span class="va">y</span>, cens <span class="op">=</span> <span class="va">cens</span>, </span>
@@ -317,7 +274,7 @@ and <code>threshold</code> to run TopKAT at.</p>
 <span>                                     outcome.type <span class="op">=</span> <span class="st">"survival"</span><span class="op">)</span></span></code></pre></div>
 <p>We first examine the sequence of p-values at each radius. The radius
 at which the minimum TopKAT p-value arose was
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>28.57143</mn></mrow><annotation encoding="application/x-tex">r=28.57143</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>8.163265</mn></mrow><annotation encoding="application/x-tex">r=8.163265</annotation></semantics></math>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create a data.frame</span></span>
 <span><span class="va">res_scale_import.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -333,86 +290,86 @@ at which the minimum TopKAT p-value arose was
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Radius"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"P-Value"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"TopKAT Significance at each Radius"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">res_scale_import</span><span class="op">$</span><span class="va">min.thresh</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="TopKAT_files/figure-html/radii%20vs%20pvals-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="example_sim_tissue_files/figure-html/radii%20vs%20pvals-1.png" width="768" style="display: block; margin: auto;"></p>
 <p>We can also examine what the simplicial complex at this radius looks
 like for our example images:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot the simplicial complex at r=res_scale_import$min.thresh</span></span>
 <span><span class="va">sc1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cells_with_scale.html">plot_cells_with_scale</a></span><span class="op">(</span></span>
-<span>  image <span class="op">=</span> <span class="va">data1.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  image <span class="op">=</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="va">res_scale_import</span><span class="op">$</span><span class="va">min.thresh</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Simplicial Complex for Sample 1"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sc2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cells_with_scale.html">plot_cells_with_scale</a></span><span class="op">(</span></span>
-<span>  image <span class="op">=</span> <span class="va">data1.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  image <span class="op">=</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="va">res_scale_import</span><span class="op">$</span><span class="va">min.thresh</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Simplicial Complex for Sample 2"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sc3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cells_with_scale.html">plot_cells_with_scale</a></span><span class="op">(</span></span>
-<span>  image <span class="op">=</span> <span class="va">data1.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">51</span><span class="op">)</span>,</span>
+<span>  image <span class="op">=</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">51</span><span class="op">)</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="va">res_scale_import</span><span class="op">$</span><span class="va">min.thresh</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Simplicial Complex for Sample 51"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sc4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cells_with_scale.html">plot_cells_with_scale</a></span><span class="op">(</span></span>
-<span>  image <span class="op">=</span> <span class="va">data1.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">52</span><span class="op">)</span>,</span>
+<span>  image <span class="op">=</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">52</span><span class="op">)</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="va">res_scale_import</span><span class="op">$</span><span class="va">min.thresh</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Simplicial Complex for Sample 52"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Arrange the plots</span></span>
 <span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">sc1</span>, <span class="va">sc2</span>, <span class="va">sc3</span>, <span class="va">sc4</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="TopKAT_files/figure-html/simplicial%20complex-1.png" width="768" style="display: block; margin: auto;">
-Finally, we can examine the connectivity of the cell types at this
+<p><img src="example_sim_tissue_files/figure-html/simplicial%20complex-1.png" width="768" style="display: block; margin: auto;"></p>
+<p>Finally, we can examine the connectivity of the cell types at this
 radius using connectivity matrices. These matrices enumerate how many
 connections there are between cells at
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>28.5</mn></mrow><annotation encoding="application/x-tex">r=28.5</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mn>8.2</mn></mrow><annotation encoding="application/x-tex">r= 8.2</annotation></semantics></math>.
 We visualize these matrices for the four samples given above.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Connectivity matrices</span></span>
 <span><span class="va">c1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cell_connections.html">plot_cell_connections</a></span><span class="op">(</span></span>
-<span>  image <span class="op">=</span> <span class="va">data1.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  image <span class="op">=</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="va">res_scale_import</span><span class="op">$</span><span class="va">min.thresh</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Cell Connectivity for Patient 1"</span>,</span>
 <span>  type.column <span class="op">=</span> <span class="st">"type"</span>,</span>
-<span>  unique.types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data1.df</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
+<span>  unique.types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data2.df</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">c2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cell_connections.html">plot_cell_connections</a></span><span class="op">(</span></span>
-<span>  image <span class="op">=</span> <span class="va">data1.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  image <span class="op">=</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="va">res_scale_import</span><span class="op">$</span><span class="va">min.thresh</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Cell Connectivity for Patient 2"</span>,</span>
 <span>  type.column <span class="op">=</span> <span class="st">"type"</span>,</span>
-<span>  unique.types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data1.df</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
+<span>  unique.types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data2.df</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">c3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cell_connections.html">plot_cell_connections</a></span><span class="op">(</span></span>
-<span>  image <span class="op">=</span> <span class="va">data1.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">51</span><span class="op">)</span>,</span>
+<span>  image <span class="op">=</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">51</span><span class="op">)</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="va">res_scale_import</span><span class="op">$</span><span class="va">min.thresh</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Cell Connectivity for Patient 51"</span>,</span>
 <span>  type.column <span class="op">=</span> <span class="st">"type"</span>,</span>
-<span>  unique.types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data1.df</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
+<span>  unique.types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data2.df</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">c4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cell_connections.html">plot_cell_connections</a></span><span class="op">(</span></span>
-<span>  image <span class="op">=</span> <span class="va">data1.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">52</span><span class="op">)</span>,</span>
+<span>  image <span class="op">=</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">52</span><span class="op">)</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="va">res_scale_import</span><span class="op">$</span><span class="va">min.thresh</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Cell Connectivity for Patient 52"</span>,</span>
 <span>  type.column <span class="op">=</span> <span class="st">"type"</span>,</span>
-<span>  unique.types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data1.df</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
+<span>  unique.types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data2.df</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Arrange the plots</span></span>
 <span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">c1</span>, <span class="va">c2</span>, <span class="va">c3</span>, <span class="va">c4</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="TopKAT_files/figure-html/connectivity%20matrices-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="example_sim_tissue_files/figure-html/connectivity%20matrices-1.png" width="768" style="display: block; margin: auto;"></p>
 <p>It can also be illustrative to compute an average connectivity matrix
 across the whole cohort or within known patient samples, as shown
 below.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Save the cell types</span></span>
-<span><span class="va">cell.types</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data1.df</span><span class="op">$</span><span class="va">type</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">cell.types</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data2.df</span><span class="op">$</span><span class="va">type</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Connectivity matrix for mixed and segregated</span></span>
 <span><span class="va">connect</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">cell.types</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">cell.types</span><span class="op">)</span>,</span>
@@ -422,7 +379,7 @@ below.</p>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">)</span> <span class="op">{</span></span>
 <span></span>
 <span>  <span class="co"># Save the data</span></span>
-<span>  <span class="va">patient</span> <span class="op">&lt;-</span> <span class="va">data1.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="va">i</span><span class="op">)</span> </span>
+<span>  <span class="va">patient</span> <span class="op">&lt;-</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="va">i</span><span class="op">)</span> </span>
 <span></span>
 <span>  <span class="co"># Plot the scale importance</span></span>
 <span>  <span class="va">connect.i</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_connectivity.html">generate_connectivity</a></span><span class="op">(</span>images.df <span class="op">=</span> <span class="va">patient</span>, </span>
@@ -458,7 +415,7 @@ below.</p>
 <span>          legend.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">11</span>, angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span>,</span>
 <span>          plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Average Connectivity Matrix Across Samples"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="TopKAT_files/figure-html/average%20connectivity-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="example_sim_tissue_files/figure-html/average%20connectivity-1.png" width="768" style="display: block; margin: auto;"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
