@@ -1,0 +1,305 @@
+---
+title: "Applying TopKAT to Simulated Tissue Data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{example_sim_tissue}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,      # Set default width of plots
+  fig.height = 9,     # Set default height of plots
+  fig.align = "center" # Center-align plots
+)
+```
+
+## Introduction
+
+In this vignette, we illustrate how to apply the `TopKAT` method to analyze cell-level imaging data. We simulated this data using the `scSpatialSIM` package to provide a more realistic example of applying `TopKAT` to imaging data with cell-level resolution. 
+
+## Loading in the Data and Plotting
+
+We start by loading in the packages we will need in this vignette and our simulated data. 
+
+```{r setup}
+library(TopKAT)
+library(gridExtra)
+library(survival)
+library(survminer)
+
+# Load data
+data(data2.df)
+
+# View the first few lines
+head(data2.df)
+```
+
+The data is organized in a similar manner as the simulated dataset used in the `Getting Started` vignette. The `PID` column refers to the sample or patient ID which, in this case, enumerates from `1` to `100`. The `id` column enumerates the image number within the sample since in many applications we have multiple images per patient. In this case, the `PID` and `id` columns are the same because we simulated a single image for each sample. The `x` and `y` columns denote the 2D coordinates of the cell locations. The `type` column contains a simulated type for each cell, ranging from `cell type 1` to `cell type 4`. 
+
+To simulate this data, we split the 100 samples into two groups of 50. We simulated 50 datasets from the `scSpatialSIM` package using the same set of parameters. We simulated two tissue types. We then split these two tissue types into the two groups. The outcomes were simulated as described in the `Getting Started` vignette -- we simulated from an exponential distribution with rates equal to $\log(2)$ and $\log(2)/2$, respectively. We randomly censored 10\% of samples. 
+
+We plot the a handful of images here to illustrate the spatial patterns among the cells. 
+
+```{r plotting the data}
+# Plotting some images from the first 50
+p1 <- data2.df %>% dplyr::filter(PID == 1) %>% 
+  ggplot(aes(x = x, y = y, colour = type)) + geom_point() +
+  theme_bw() + ggtitle("Sample 1") +
+  theme(legend.position = )
+
+p2 <- data2.df %>% dplyr::filter(PID == 2) %>% 
+  ggplot(aes(x = x, y = y, colour = type)) + geom_point() +
+  theme_bw() + ggtitle("Sample 2")
+
+p3 <- data2.df %>% dplyr::filter(PID == 51) %>% 
+  ggplot(aes(x = x, y = y, colour = type)) + geom_point() +
+  theme_bw() + ggtitle("Sample 51")
+
+p4 <- data2.df %>% dplyr::filter(PID == 52) %>% 
+  ggplot(aes(x = x, y = y, colour = type)) + geom_point() +
+  theme_bw() + ggtitle("Sample 52")
+
+# Arrange the plots
+gridExtra::grid.arrange(p1, p2, p3, p4, ncol = 2, nrow = 2)
+```
+## Applying TopKAT
+
+The goal of TopKAT is to test whether images with similar geometric structures created by cells correspond to patients with similar outcomes (in this case, survival). The null hypothesis we wish to test is:
+
+$H_0$: There is no association between survival time and topological structure of cells
+$H_1$: There is an association between survival time and topological structure of cells
+
+If the TopKAT p-value is small, this is evidence against $H_0$. 
+
+We first calculate the kernel matrices which quantify the similarity between images using the function `rips_similarity_matrix`. Note that we compute a separate kernel matrix for connected components and loops. In other words, we first compare the images on the basis of connected components and then on the basis of loops, yielding two matrices quantifying the pairwise similarities among the images. Later, in our kernel association test, we will aggregate across these matrices to yield an omnibus test of association. 
+
+Below, we show how to calculate the kernel matrices using `rips_similarity_matrix` using a maximum radius of $100$. We chose this maximum radius since the images are of dimension $100 \times 100$. There is no penalty for selecting a radius that exceeds the boundaries of the image. 
+
+```{r compute kernel matrices}
+# Compute the similarity matrix
+simmat <- rips_similarity_matrix(data2.df, max.threshold = 100, print.progress = FALSE)
+```
+
+We illustrate here two visualizations. First, we visualize the corresponding persistence diagrams for the four samples shown above. 
+
+```{r example PDs}
+# Plotting the persistence diagrams
+pd1 <- plot_persistence(simmat$rips.list[[1]], title = "Patient 1")
+
+pd2 <- plot_persistence(simmat$rips.list[[2]], title = "Patient 2")
+
+pd3 <- plot_persistence(simmat$rips.list[[51]], title = "Patient 51")
+
+pd4 <- plot_persistence(simmat$rips.list[[52]], title = "Patient 52")
+
+# Arrange the plots
+gridExtra::grid.arrange(pd1, pd2, pd3, pd4, ncol = 2, nrow = 2)
+```
+
+We also show a visualization of the kernel matrices to describe the similarities among the images. Note that the similarity values in the kernel matrices are not interpretable on their own and can only be used to compare the similarities between two pairs of images.
+
+```{r visualize the kernel matrices}
+# Visualize the kernel matrices for the connected components
+K.cc <- simmat$K.list[[1]] %>%
+  reshape2::melt() %>%
+  ggplot(aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile(color = "white") +
+  theme_bw() +
+  xlab("Image 1") + ylab("Image 2") +
+  ggtitle("Kernel Matrix for Connected Components")
+  
+
+# Visualize the kernel matrices for the loops
+K.loop <- simmat$K.list[[2]] %>%
+  reshape2::melt() %>%
+  ggplot(aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile(color = "white") +
+  theme_bw() +
+  xlab("Image 1") + ylab("Image 2") +
+  ggtitle("Kernel Matrix for Loops")
+
+# Arrange the plots
+gridExtra::grid.arrange(K.cc, K.loop, ncol = 2)
+```
+
+Finally, we can test for an association with survival given the kernel matrices we computed above. Since we have two kernel matrices, we may want to aggregate our association results across both homologies. We will construct a linear combination of the kernel matrices and aggregate results across different mixtures. A straightforward choice of weights is $\omega = (0, 0.5, 1)$ in the following linear combination:
+
+$ K^{agg} = (1-\omega) K_0 + \omega K_1$
+
+We now apply TopKAT. As shown below, the TopKAT p-value is significant, $2\times 10^{-5}$. 
+
+```{r TopKAT}
+# Applying TopKAT to the simulated data
+res <- TopKAT(y = y, X = NULL, cens = cens,
+              K.list = simmat$K.list, omega.list = c(0, 0.5, 1),
+              outcome.type = "survival")
+
+# Output the p-value
+res$overall.pval
+```
+
+We can also examine how significant the results are for each linear combination of kernel matrices:
+
+```{r TopKAT individual p-values}
+res$p.vals
+```
+
+## Descriptive Post-Hoc Analyses
+
+We can now explore which distances are most "important" (i.e., significant) and assess which cell types are connected at this distance using the `scale_importance` function. 
+
+```{r scale importance}
+res_scale_import <- scale_importance(pd.list = simmat$rips.list,
+                                     y = y, cens = cens, 
+                                     omega.list = c(0, 0.5, 1),
+                                     threshold = 100, 
+                                     PIDs = 1:100,
+                                     outcome.type = "survival")
+```
+
+We first examine the sequence of p-values at each radius. The radius at which the minimum TopKAT p-value arose was $r=8.163265$. 
+
+```{r radii vs pvals}
+# Create a data.frame
+res_scale_import.df <- data.frame(
+  thresh = res_scale_import$threshold.seq,
+  pval = res_scale_import$pvals
+)
+
+# Plot
+res_scale_import.df %>% 
+  ggplot(aes(x = thresh, y = pval)) +
+  geom_point() +
+  theme_bw() +
+  xlab("Radius") + ylab("P-Value") +
+  ggtitle("TopKAT Significance at each Radius") +
+  geom_vline(xintercept = res_scale_import$min.thresh, linetype = "dashed") 
+```
+
+We can also examine what the simplicial complex at this radius looks like for our example images:
+
+```{r simplicial complex}
+# Plot the simplicial complex at r=res_scale_import$min.thresh
+sc1 <- plot_cells_with_scale(
+  image = data2.df %>% dplyr::filter(PID == 1),
+  threshold = res_scale_import$min.thresh,
+  title = "Simplicial Complex for Sample 1"
+)
+
+sc2 <- plot_cells_with_scale(
+  image = data2.df %>% dplyr::filter(PID == 2),
+  threshold = res_scale_import$min.thresh,
+  title = "Simplicial Complex for Sample 2"
+)
+
+sc3 <- plot_cells_with_scale(
+  image = data2.df %>% dplyr::filter(PID == 51),
+  threshold = res_scale_import$min.thresh,
+  title = "Simplicial Complex for Sample 51"
+)
+
+sc4 <- plot_cells_with_scale(
+  image = data2.df %>% dplyr::filter(PID == 52),
+  threshold = res_scale_import$min.thresh,
+  title = "Simplicial Complex for Sample 52"
+)
+
+# Arrange the plots
+gridExtra::grid.arrange(sc1, sc2, sc3, sc4, nrow = 2, ncol = 2)
+```
+
+Finally, we can examine the connectivity of the cell types at this radius using connectivity matrices. These matrices enumerate how many connections there are between cells at $r= 8.2$. We visualize these matrices for the four samples given above. 
+
+```{r connectivity matrices}
+# Connectivity matrices
+c1 <- plot_cell_connections(
+  image = data2.df %>% dplyr::filter(PID == 1),
+  threshold = res_scale_import$min.thresh,
+  title = "Cell Connectivity for Patient 1",
+  type.column = "type",
+  unique.types = unique(data2.df$type)
+)
+
+c2 <- plot_cell_connections(
+  image = data2.df %>% dplyr::filter(PID == 2),
+  threshold = res_scale_import$min.thresh,
+  title = "Cell Connectivity for Patient 2",
+  type.column = "type",
+  unique.types = unique(data2.df$type)
+)
+
+c3 <- plot_cell_connections(
+  image = data2.df %>% dplyr::filter(PID == 51),
+  threshold = res_scale_import$min.thresh,
+  title = "Cell Connectivity for Patient 51",
+  type.column = "type",
+  unique.types = unique(data2.df$type)
+)
+
+c4 <- plot_cell_connections(
+  image = data2.df %>% dplyr::filter(PID == 52),
+  threshold = res_scale_import$min.thresh,
+  title = "Cell Connectivity for Patient 52",
+  type.column = "type",
+  unique.types = unique(data2.df$type)
+)
+
+# Arrange the plots
+gridExtra::grid.arrange(c1, c2, c3, c4, nrow = 2, ncol = 2)
+```
+
+It can also be illustrative to compute an average connectivity matrix across the whole cohort or within known patient samples, as shown below. 
+
+```{r average connectivity}
+# Save the cell types
+cell.types <- as.character(unique(data2.df$type))
+
+# Connectivity matrix for mixed and segregated
+connect <- matrix(0, nrow = length(cell.types), ncol = length(cell.types),
+                     dimnames = list(cell.types, cell.types))
+
+# Iterate through the samples
+for (i in 1:100) {
+
+  # Save the data
+  patient <- data2.df %>% dplyr::filter(PID == i) 
+
+  # Plot the scale importance
+  connect.i <- generate_connectivity(images.df = patient, 
+                                     threshold = res_scale_import$min.thresh, 
+                                     type.column = "type", 
+                                     unique.types = cell.types)
+
+  # Match the rows and columns in case an image was missing a cell type
+  match.rows <- match(rownames(connect.i), cell.types)
+  match.cols <- match(colnames(connect.i), cell.types)
+
+  # Add to the matrix
+  connect[match.rows, match.cols] <- connect[match.rows, match.cols] + connect.i
+
+}
+
+# Take the average
+connect <- connect/100
+
+# Visualize
+ggplot(reshape2::melt(connect), aes(Var1, Var2, fill = value)) +
+    ggplot2::geom_tile(colour = "white") +
+    viridis::scale_fill_viridis(option = "turbo") +
+    ggplot2::labs(x = "Cell Type 1", y = "Cell Type 2", fill = "Number of Connections") +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+          axis.text.y = element_text(size = 12),
+          axis.title = element_text(size = 13),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          legend.position = "bottom",
+          legend.title = element_text(size = 12),
+          legend.text = element_text(size = 11, angle = 45, hjust = 0.75),
+          plot.title = element_text(size = 14)) +
+    ggplot2::ggtitle("Average Connectivity Matrix Across Samples")
+```
