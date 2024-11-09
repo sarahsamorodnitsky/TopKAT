@@ -8,7 +8,7 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
-nitr::opts_chunk$set(
+knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.width = 8,      # Set default width of plots
