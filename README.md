@@ -1,10 +1,5 @@
 # TopKAT: Topological Kernel Association Test <img src="man/figures/TopKAT_hex.png" align="right" alt="" width="120" />
 
-<!-- badges: start -->
-[![R-CMD-check](https://github.com/sarahsamorodnitsky/TopKAT/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sarahsamorodnitsky/TopKAT/actions/workflows/R-CMD-check.yaml)
-<!-- badges: end -->
-
-
 ## Overview
 
 TopKAT is a global test of association between the topological (geometric) structure of cells in cell-level imaging data. The goal of the `TopKAT` package is to provide the software to run this test and do post-hoc analyses of the results. 
