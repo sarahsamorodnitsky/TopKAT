@@ -1,6 +1,4 @@
-## TopKAT: Topological Kernel Association Test
-
-# pkgdown <img src="man/figures/TopKAT_hex.png" align="right" alt="" width="120" />
+# TopKAT: Topological Kernel Association Test <img src="man/figures/TopKAT_hex.png" align="right" alt="" width="120" />
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/sarahsamorodnitsky/TopKAT/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sarahsamorodnitsky/TopKAT/actions/workflows/R-CMD-check.yaml)
