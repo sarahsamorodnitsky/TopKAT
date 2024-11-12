@@ -27,8 +27,8 @@ Depends:
     R (>= 2.10)
 LazyData: true
 Suggests: 
-    gridExtra,
     knitr,
+    patchwork,
     rmarkdown,
     survival,
     survminer

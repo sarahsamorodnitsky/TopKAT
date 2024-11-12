@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 In this vignette, we illustrate how to apply the `TopKAT` method to analyze cell-level imaging data. 
 
-The motivation behind `TopKAT` is specifically the analysis of multiplexed spatial proteomics imaging, in which the phenotype and locations of cells is derived based on the spatial proteome. 
+The motivation behind `TopKAT` is  the analysis of multiplexed spatial proteomics imaging in which the phenotype and locations of cells is derived based on the spatial proteome. The goal is to examine the association between the geometry of cells in these images with patient-level outcomes. 
 
 This vignette will rely on simulated point pattern data that includes contrived shapes, namely squares and circles. 
 
@@ -32,6 +32,7 @@ We start by loading in the packages we will need in this vignette and our simula
 ```{r setup}
 # Packages
 library(TopKAT)
+library(patchwork)
 library(gridExtra)
 library(survival)
 library(survminer)
@@ -69,7 +70,7 @@ p4 <- data1.df %>% dplyr::filter(PID == 52) %>%
   theme_bw() + ggtitle("Sample 52")
 
 # Arrange the plots
-gridExtra::grid.arrange(p1, p2, p3, p4, ncol = 2, nrow = 2)
+(p1 + p2 + p3 + p4 & theme(legend.position = "bottom")) + plot_layout(guides = "collect")
 ```
 
 ## Applying TopKAT
@@ -83,9 +84,9 @@ If the TopKAT p-value is small, this is evidence against $H_0$.
 
 To apply TopKAT, we first need to (1) quantify the geometric arrangement of cells in each image using persistent homology and (2) calculate the similarity in geometric arrangements across images. The geometric structures we will quantify are connected components (degree-0 homologies) and loops (degree-1 homologies). TopKAT compares images based on similarities in the quantity and size (i.e., lifespan) of these homologies. In other words, if two images have a similar number of connected components or loops and these shapes are also of similar sizes, they will be more similar than two images with differences in these attributes. 
 
-To detect and quantify the size these homologies, we use a summary statistic known as a \textit{persistence diagram}. The persistence diagram summarizes the number and size of connected components and loops. We will illustrate two examples of persistence diagrams below. 
+To detect and quantify the size these homologies, we use a summary statistic known as a \textit{persistence diagram}. The persistence diagram summarizes the number and size of connected components and loops. We will illustrate examples of persistence diagrams below. 
 
-The first step in using the `TopKAT` package is to calculate the kernel matrices which quantify the similarity between images. We will use the function `rips_similarity_matrix` to compute the kernel matrices. Note that we compute a separate kernel matrix for connected components and loops. In other words, we first compare the images on the basis of connected components and then on the basis of loops, yielding two matrices quantifying the pairwise similarities among the images. Later, in our kernel association test, we will aggregate across these matrices to yield an omnibus test of association. 
+The first step in using the `TopKAT` package is to calculate the kernel matrices which quantify the similarity between images. We will use the function `rips_similarity_matrix` to compute the kernel matrices. Note that we compute a separate kernel matrix for connected components and loops, meaning we first compare the images on the basis of connected components and then on the basis of loops, yielding two matrices quantifying the pairwise similarities among the images. Later, in our kernel association test, we will aggregate across both matrices to yield an omnibus test of association. 
 
 Below, we show how to calculate the kernel matrices using `rips_similarity_matrix` using a maximum radius of $100$. We chose this maximum radius since the images are of dimension $100 \times 100$. There is no penalty for selecting a radius that exceeds the boundaries of the image. The quantification of persistent homology stops once all the cells are connected. Note that this may take up to several minutes to run, depending on the number of cells in each image. 
 
@@ -109,7 +110,7 @@ pd3 <- plot_persistence(simmat$rips.list[[51]], title = "Patient 51")
 pd4 <- plot_persistence(simmat$rips.list[[52]], title = "Patient 52")
 
 # Arrange the plots
-gridExtra::grid.arrange(pd1, pd2, pd3, pd4, ncol = 2, nrow = 2)
+(pd1 + pd2 + pd3 + pd4 & theme(legend.position = "bottom")) + plot_layout(guides = "collect")
 ```
 
 We also show a visualization of the kernel matrices to describe the similarities among the images. Note that the similarity values in the kernel matrices are not interpretable on their own and can only be used to compare the similarities between two pairs of images.
@@ -135,7 +136,7 @@ K.loop <- simmat$K.list[[2]] %>%
   ggtitle("Kernel Matrix for Loops")
 
 # Arrange the plots
-gridExtra::grid.arrange(K.cc, K.loop, ncol = 2)
+K.cc + K.loop & theme(legend.position = "bottom")
 ```
 
 Finally, we can test for an association with survival given the kernel matrices we computed above. Since we have two kernel matrices, we may want to aggregate our association results across both homologies. We will construct a linear combination of the kernel matrices and aggregate results across different mixtures. A straightforward choice of weights is $\omega = (0, 0.5, 1)$ in the following linear combination:
@@ -223,7 +224,7 @@ sc4 <- plot_cells_with_scale(
 )
 
 # Arrange the plots
-gridExtra::grid.arrange(sc1, sc2, sc3, sc4, nrow = 2, ncol = 2)
+sc1 + sc2 + sc3 + sc4
 ```
 Finally, we can examine the connectivity of the cell types at this radius using connectivity matrices. These matrices enumerate how many connections there are between cells at $r=28.5$. We visualize these matrices for the four samples given above. 
 
@@ -262,7 +263,7 @@ c4 <- plot_cell_connections(
 )
 
 # Arrange the plots
-gridExtra::grid.arrange(c1, c2, c3, c4, nrow = 2, ncol = 2)
+c1 + c2 + c3 + c4
 ```
 
 It can also be illustrative to compute an average connectivity matrix across the whole cohort or within known patient samples, as shown below. 

@@ -1,7 +1,7 @@
 #' Construct a pairwise similarity matrix
 #'
-#' `similarity_matrix` is a helper function used within the `rips_similarity_matrix`
-#' function to construct a pairwise similarity matrix comparing pairs of
+#' `similarity_matrix` is a helper function used within `rips_similarity_matrix`
+#' to construct a pairwise similarity matrix comparing pairs of
 #' persistence diagrams.
 #'
 #' @param rips.list A list of persistence diagrams for each sample
@@ -124,7 +124,7 @@ similarity_matrix <- function(rips.list, n.sample, PIDs, print.progress = FALSE)
 
 #' Calculate a similarity matrix based on the Rips filtration
 #'
-#' Given an input of data, computes a Rips filtration and persistence diagram for
+#' Given input data, computes a Rips filtration and persistence diagram for
 #' each image. Then constructs a pairwise similarity matrix for each homology group
 #' (connected components and loops) based on the resulting persistence diagrams.
 #'
@@ -210,20 +210,12 @@ rips_similarity_matrix <- function(images.df, max.threshold, print.progress = TR
 #' among connected components and among loops. May provide only 1 kernel matrix if
 #' interested in a specific homology.
 #' @param omega.list Vector of weights to create different combinations of the kernel matrices.
-#' Some suggested options: c(0, 1) then TopKAT will combine the p-values for a test associating the
-#' connected components with y and the loops with y separately. c(0, 0.5, 1) will combine p-values
+#' Some suggested options: `c(0, 1)` then TopKAT will combine the p-values for a test associating the
+#' connected components with y and the loops with y separately; `c(0, 0.5, 1)` will combine p-values
 #' across just the connected components, an even split of connected components and loops,
 #' and just loops.
 #' @param outcome.type What kind of outcome is y? Options include "continuous",
-#' "binary", or "survival".
-#' @param method Specifies how the kernel p-value should be calculated. Options
-#' include "davies" for an analytical p-value calculation or "permutation". Only
-#' for continuous or binary outcomes.
-#' @param omnibus If providing multiple kernel matrices, specify how the p-values
-#' should be combined. Defaults to "cauchy" for the Cauchy combination test.
-#' @param perm Required only for survival outcomes. Specifies if permutations should
-#' be used. Default is FALSE and Davies method is used.
-#' @param nperm If using permutations, how many permutations should be used?
+#' "binary", or "survival"
 #'
 #' @import TDAstats
 #' @import MiRKAT
@@ -252,8 +244,7 @@ rips_similarity_matrix <- function(images.df, max.threshold, print.progress = TR
 #'
 #' # Check result
 #' res$overall.pval
-TopKAT <- function(y, X = NULL, cens = NULL, K.list, omega.list, outcome.type = "continuous",
-                   method = "davies", omnibus = "cauchy", perm = FALSE, nperm = 999) {
+TopKAT <- function(y, X = NULL, cens = NULL, K.list, omega.list, outcome.type = "continuous") {
 
   # Initialize a list of kernel matrices
   K.aggregate <- lapply(1:length(omega.list), function(i) list())
@@ -272,15 +263,15 @@ TopKAT <- function(y, X = NULL, cens = NULL, K.list, omega.list, outcome.type = 
 
   # Run the kernel machine regression framework through MiRKAT
   if (outcome.type == "continuous") {
-    res <- MiRKAT::MiRKAT(y = y, X = X, Ks = K.aggregate, out_type = "C", method = method, omnibus = omnibus, nperm = nperm)
+    res <- MiRKAT::MiRKAT(y = y, X = X, Ks = K.aggregate, out_type = "C", method = "davies", omnibus = "cauchy", nperm = nperm)
   }
 
   if (outcome.type == "binary") {
-    res <- MiRKAT::MiRKAT(y = y, X = X, Ks = K.aggregate, out_type = "D", method = method, omnibus = omnibus, nperm = nperm)
+    res <- MiRKAT::MiRKAT(y = y, X = X, Ks = K.aggregate, out_type = "D", method = "davies", omnibus = "cauchy", nperm = nperm)
   }
 
   if (outcome.type == "survival") {
-    res <- MiRKAT::MiRKATS(obstime = y, delta = cens, X = X, Ks = K.aggregate, perm = perm, omnibus = omnibus, nperm = nperm)
+    res <- MiRKAT::MiRKATS(obstime = y, delta = cens, X = X, Ks = K.aggregate, perm = FALSE, omnibus = "Cauchy", nperm = nperm)
   }
 
   # Save the results

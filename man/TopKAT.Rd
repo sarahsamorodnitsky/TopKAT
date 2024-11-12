@@ -10,11 +10,7 @@ TopKAT(
   cens = NULL,
   K.list,
   omega.list,
-  outcome.type = "continuous",
-  method = "davies",
-  omnibus = "cauchy",
-  perm = FALSE,
-  nperm = 999
+  outcome.type = "continuous"
 )
 }
 \arguments{
@@ -32,25 +28,13 @@ among connected components and among loops. May provide only 1 kernel matrix if
 interested in a specific homology.}
 
 \item{omega.list}{Vector of weights to create different combinations of the kernel matrices.
-Some suggested options: c(0, 1) then TopKAT will combine the p-values for a test associating the
-connected components with y and the loops with y separately. c(0, 0.5, 1) will combine p-values
+Some suggested options: \code{c(0, 1)} then TopKAT will combine the p-values for a test associating the
+connected components with y and the loops with y separately; \code{c(0, 0.5, 1)} will combine p-values
 across just the connected components, an even split of connected components and loops,
 and just loops.}
 
 \item{outcome.type}{What kind of outcome is y? Options include "continuous",
-"binary", or "survival".}
-
-\item{method}{Specifies how the kernel p-value should be calculated. Options
-include "davies" for an analytical p-value calculation or "permutation". Only
-for continuous or binary outcomes.}
-
-\item{omnibus}{If providing multiple kernel matrices, specify how the p-values
-should be combined. Defaults to "cauchy" for the Cauchy combination test.}
-
-\item{perm}{Required only for survival outcomes. Specifies if permutations should
-be used. Default is FALSE and Davies method is used.}
-
-\item{nperm}{If using permutations, how many permutations should be used?}
+"binary", or "survival"}
 }
 \value{
 Returns a list of the following objects:

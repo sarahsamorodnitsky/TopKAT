@@ -19,7 +19,7 @@ Returns a list of similarity (kernel) matrices and a list of the
 resulting persistence diagrams for each image.
 }
 \description{
-Given an input of data, computes a Rips filtration and persistence diagram for
+Given input data, computes a Rips filtration and persistence diagram for
 each image. Then constructs a pairwise similarity matrix for each homology group
 (connected components and loops) based on the resulting persistence diagrams.
 }

@@ -20,8 +20,8 @@ resulting similarity matrix.}
 Returns a list of kernel (similarity matrices) for each homology group.
 }
 \description{
-\code{similarity_matrix} is a helper function used within the \code{rips_similarity_matrix}
-function to construct a pairwise similarity matrix comparing pairs of
+\code{similarity_matrix} is a helper function used within \code{rips_similarity_matrix}
+to construct a pairwise similarity matrix comparing pairs of
 persistence diagrams.
 }
 \examples{

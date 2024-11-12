@@ -1,6 +1,6 @@
 #' Generate a list of persistence diagrams
 #'
-#' Run the Rips filtration for each image and return a list of persistence diagrams.
+#' Construct a Rips filtration for each image and return a list of persistence diagrams.
 #' This is a helper function for `scale_importance`.
 #'
 #' @param images.df A data.frame containing the image information. See details.
@@ -65,15 +65,6 @@ generate_rips <- function(images.df, max.threshold, print.progress = TRUE) {
 #' @param PIDs Vector of patient IDs
 #' @param outcome.type Outcome type, options include "continuous", "binary", or
 #' "survival"
-#' @param method Specifies how the kernel p-value should be calculated. Options
-#' include "davies" for an analytical p-value calculation or "permutation". Only
-#' for continuous or binary outcomes.
-#' @param omnibus If providing multiple kernel matrices, specify how the p-values
-#' should be combined. Defaults to "cauchy" for the Cauchy combination test.
-#' @param perm Required only for survival outcomes. Specifies if permutations should
-#' be used. Default is FALSE and Davies method is used.
-#' @param nperm If using permutations, how many permutations should be used?
-#' @param n.thresh How many maximum radii should be considered?
 #' @param print.progress Boolean, should progress be printed throughout analysis?
 #'
 #' @details The arguments for `method`, `omnibus`, `perm`, and `nperm` should match
@@ -102,8 +93,7 @@ generate_rips <- function(images.df, max.threshold, print.progress = TRUE) {
 #' # Plot the results
 #' plot(data1.scale$threshold.seq, data1.scale$pvals); abline(v = data1.scale$min.thresh)
 scale_importance <- function(pd.list, y, X = NULL, cens = NULL, omega.list, threshold,
-                             PIDs, outcome.type = "continuous", method = "davies",
-                             omnibus = "cauchy",perm = FALSE, nperm = 999, n.thresh = 50,
+                             PIDs, outcome.type = "continuous", n.thresh = 50,
                              print.progress = FALSE) {
 
   # How many samples are there?
@@ -168,21 +158,15 @@ scale_importance <- function(pd.list, y, X = NULL, cens = NULL, omega.list, thre
 
       # Run the kernel machine regression framework through MiRKAT
       if (outcome.type == "continuous") {
-        res <- MiRKAT::MiRKAT(y = y, X = X, Ks = K.list[[1]],
-                              out_type = "C", method = method,
-                              omnibus = omnibus, nperm = nperm)
+        res <- MiRKAT::MiRKAT(y = y, X = X, Ks = K.list[[1]], out_type = "C")
       }
 
       if (outcome.type == "binary") {
-        res <- MiRKAT::MiRKAT(y = y, X = X, Ks = K.list[[1]],
-                              out_type = "D", method = method,
-                              omnibus = omnibus, nperm = nperm)
+        res <- MiRKAT::MiRKAT(y = y, X = X, Ks = K.list[[1]], out_type = "D")
       }
 
       if (outcome.type == "survival") {
-        res <- MiRKAT::MiRKATS(obstime = y, delta = cens, X = X,
-                               Ks = K.list[[1]], perm = perm,
-                               omnibus = omnibus, nperm = nperm)
+        res <- MiRKAT::MiRKATS(obstime = y, delta = cens, X = X, Ks = K.list[[1]])
       }
 
       # Save the result
@@ -199,11 +183,7 @@ scale_importance <- function(pd.list, y, X = NULL, cens = NULL, omega.list, thre
                     cens = cens,
                     K.list = K.list,
                     omega.list = omega.list,
-                    outcome.type = outcome.type,
-                    method = method,
-                    omnibus = omnibus,
-                    perm = perm,
-                    nperm = nperm)
+                    outcome.type = outcome.type)
 
       # Save the resulting p-value
       pvals <- c(pvals, res$overall.pval)
