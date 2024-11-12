@@ -60,11 +60,7 @@ or survival outcomes.</p>
 <span>  cens <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">K.list</span>,</span>
 <span>  <span class="va">omega.list</span>,</span>
-<span>  outcome.type <span class="op">=</span> <span class="st">"continuous"</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"davies"</span>,</span>
-<span>  omnibus <span class="op">=</span> <span class="st">"cauchy"</span>,</span>
-<span>  perm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  nperm <span class="op">=</span> <span class="fl">999</span></span>
+<span>  outcome.type <span class="op">=</span> <span class="st">"continuous"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -95,35 +91,15 @@ interested in a specific homology.</p></dd>
 
 <dt id="arg-omega-list">omega.list<a class="anchor" aria-label="anchor" href="#arg-omega-list"></a></dt>
 <dd><p>Vector of weights to create different combinations of the kernel matrices.
-Some suggested options: c(0, 1) then TopKAT will combine the p-values for a test associating the
-connected components with y and the loops with y separately. c(0, 0.5, 1) will combine p-values
+Some suggested options: <code>c(0, 1)</code> then TopKAT will combine the p-values for a test associating the
+connected components with y and the loops with y separately; <code>c(0, 0.5, 1)</code> will combine p-values
 across just the connected components, an even split of connected components and loops,
 and just loops.</p></dd>
 
 
 <dt id="arg-outcome-type">outcome.type<a class="anchor" aria-label="anchor" href="#arg-outcome-type"></a></dt>
 <dd><p>What kind of outcome is y? Options include "continuous",
-"binary", or "survival".</p></dd>
-
-
-<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p>Specifies how the kernel p-value should be calculated. Options
-include "davies" for an analytical p-value calculation or "permutation". Only
-for continuous or binary outcomes.</p></dd>
-
-
-<dt id="arg-omnibus">omnibus<a class="anchor" aria-label="anchor" href="#arg-omnibus"></a></dt>
-<dd><p>If providing multiple kernel matrices, specify how the p-values
-should be combined. Defaults to "cauchy" for the Cauchy combination test.</p></dd>
-
-
-<dt id="arg-perm">perm<a class="anchor" aria-label="anchor" href="#arg-perm"></a></dt>
-<dd><p>Required only for survival outcomes. Specifies if permutations should
-be used. Default is FALSE and Davies method is used.</p></dd>
-
-
-<dt id="arg-nperm">nperm<a class="anchor" aria-label="anchor" href="#arg-nperm"></a></dt>
-<dd><p>If using permutations, how many permutations should be used?</p></dd>
+"binary", or "survival"</p></dd>
 
 </dl></div>
     <div class="section level2">

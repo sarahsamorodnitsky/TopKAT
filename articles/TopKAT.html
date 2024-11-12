@@ -77,10 +77,11 @@
 </h2>
 <p>In this vignette, we illustrate how to apply the <code>TopKAT</code>
 method to analyze cell-level imaging data.</p>
-<p>The motivation behind <code>TopKAT</code> is specifically the
-analysis of multiplexed spatial proteomics imaging, in which the
-phenotype and locations of cells is derived based on the spatial
-proteome.</p>
+<p>The motivation behind <code>TopKAT</code> is the analysis of
+multiplexed spatial proteomics imaging in which the phenotype and
+locations of cells is derived based on the spatial proteome. The goal is
+to examine the association between the geometry of cells in these images
+with patient-level outcomes.</p>
 <p>This vignette will rely on simulated point pattern data that includes
 contrived shapes, namely squares and circles.</p>
 </div>
@@ -95,6 +96,7 @@ our simulated data.</p>
 <span><span class="co">#&gt; Registered S3 method overwritten by 'httr':</span></span>
 <span><span class="co">#&gt;   method         from  </span></span>
 <span><span class="co">#&gt;   print.response rmutil</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">gridExtra</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/survminer/index.html" class="external-link">survminer</a></span><span class="op">)</span></span>
@@ -166,7 +168,7 @@ first image) or large loops.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Sample 52"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Arrange the plots</span></span>
-<span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span>, <span class="va">p4</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">(</span><span class="va">p1</span> <span class="op">+</span> <span class="va">p2</span> <span class="op">+</span> <span class="va">p3</span> <span class="op">+</span> <span class="va">p4</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>guides <span class="op">=</span> <span class="st">"collect"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="TopKAT_files/figure-html/plotting%20the%20data-1.png" width="768" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
@@ -195,18 +197,17 @@ sizes, they will be more similar than two images with differences in
 these attributes.</p>
 <p>To detect and quantify the size these homologies, we use a summary
 statistic known as a . The persistence diagram summarizes the number and
-size of connected components and loops. We will illustrate two examples
-of persistence diagrams below.</p>
+size of connected components and loops. We will illustrate examples of
+persistence diagrams below.</p>
 <p>The first step in using the <code>TopKAT</code> package is to
 calculate the kernel matrices which quantify the similarity between
 images. We will use the function <code>rips_similarity_matrix</code> to
 compute the kernel matrices. Note that we compute a separate kernel
-matrix for connected components and loops. In other words, we first
-compare the images on the basis of connected components and then on the
-basis of loops, yielding two matrices quantifying the pairwise
-similarities among the images. Later, in our kernel association test, we
-will aggregate across these matrices to yield an omnibus test of
-association.</p>
+matrix for connected components and loops, meaning we first compare the
+images on the basis of connected components and then on the basis of
+loops, yielding two matrices quantifying the pairwise similarities among
+the images. Later, in our kernel association test, we will aggregate
+across both matrices to yield an omnibus test of association.</p>
 <p>Below, we show how to calculate the kernel matrices using
 <code>rips_similarity_matrix</code> using a maximum radius of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>100</mn><annotation encoding="application/x-tex">100</annotation></semantics></math>.
@@ -236,7 +237,7 @@ corresponding persistence diagrams for the four samples shown above.</p>
 <span><span class="va">pd4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_persistence.html">plot_persistence</a></span><span class="op">(</span><span class="va">simmat</span><span class="op">$</span><span class="va">rips.list</span><span class="op">[[</span><span class="fl">52</span><span class="op">]</span><span class="op">]</span>, title <span class="op">=</span> <span class="st">"Patient 52"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Arrange the plots</span></span>
-<span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">pd1</span>, <span class="va">pd2</span>, <span class="va">pd3</span>, <span class="va">pd4</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">(</span><span class="va">pd1</span> <span class="op">+</span> <span class="va">pd2</span> <span class="op">+</span> <span class="va">pd3</span> <span class="op">+</span> <span class="va">pd4</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>guides <span class="op">=</span> <span class="st">"collect"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="TopKAT_files/figure-html/example%20PDs-1.png" width="768" style="display: block; margin: auto;"></p>
 <p>We also show a visualization of the kernel matrices to describe the
 similarities among the images. Note that the similarity values in the
@@ -263,7 +264,7 @@ to compare the similarities between two pairs of images.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Kernel Matrix for Loops"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Arrange the plots</span></span>
-<span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">K.cc</span>, <span class="va">K.loop</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">K.cc</span> <span class="op">+</span> <span class="va">K.loop</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="TopKAT_files/figure-html/visualize%20the%20kernel%20matrices-1.png" width="768" style="display: block; margin: auto;"></p>
 <p>Finally, we can test for an association with survival given the
 kernel matrices we computed above. Since we have two kernel matrices, we
@@ -363,7 +364,7 @@ like for our example images:</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Arrange the plots</span></span>
-<span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">sc1</span>, <span class="va">sc2</span>, <span class="va">sc3</span>, <span class="va">sc4</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">sc1</span> <span class="op">+</span> <span class="va">sc2</span> <span class="op">+</span> <span class="va">sc3</span> <span class="op">+</span> <span class="va">sc4</span></span></code></pre></div>
 <p><img src="TopKAT_files/figure-html/simplicial%20complex-1.png" width="768" style="display: block; margin: auto;">
 Finally, we can examine the connectivity of the cell types at this
 radius using connectivity matrices. These matrices enumerate how many
@@ -405,7 +406,7 @@ We visualize these matrices for the four samples given above.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Arrange the plots</span></span>
-<span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">c1</span>, <span class="va">c2</span>, <span class="va">c3</span>, <span class="va">c4</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">c1</span> <span class="op">+</span> <span class="va">c2</span> <span class="op">+</span> <span class="va">c3</span> <span class="op">+</span> <span class="va">c4</span></span></code></pre></div>
 <p><img src="TopKAT_files/figure-html/connectivity%20matrices-1.png" width="768" style="display: block; margin: auto;"></p>
 <p>It can also be illustrative to compute an average connectivity matrix
 across the whole cohort or within known patient samples, as shown
