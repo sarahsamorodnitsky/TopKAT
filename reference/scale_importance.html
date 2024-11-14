@@ -60,10 +60,6 @@ between the topological structure in each image and outcomes.</p>
 <span>  <span class="va">threshold</span>,</span>
 <span>  <span class="va">PIDs</span>,</span>
 <span>  outcome.type <span class="op">=</span> <span class="st">"continuous"</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"davies"</span>,</span>
-<span>  omnibus <span class="op">=</span> <span class="st">"cauchy"</span>,</span>
-<span>  perm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  nperm <span class="op">=</span> <span class="fl">999</span>,</span>
 <span>  n.thresh <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  print.progress <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -104,30 +100,6 @@ between the topological structure in each image and outcomes.</p>
 <dt id="arg-outcome-type">outcome.type<a class="anchor" aria-label="anchor" href="#arg-outcome-type"></a></dt>
 <dd><p>Outcome type, options include "continuous", "binary", or
 "survival"</p></dd>
-
-
-<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p>Specifies how the kernel p-value should be calculated. Options
-include "davies" for an analytical p-value calculation or "permutation". Only
-for continuous or binary outcomes.</p></dd>
-
-
-<dt id="arg-omnibus">omnibus<a class="anchor" aria-label="anchor" href="#arg-omnibus"></a></dt>
-<dd><p>If providing multiple kernel matrices, specify how the p-values
-should be combined. Defaults to "cauchy" for the Cauchy combination test.</p></dd>
-
-
-<dt id="arg-perm">perm<a class="anchor" aria-label="anchor" href="#arg-perm"></a></dt>
-<dd><p>Required only for survival outcomes. Specifies if permutations should
-be used. Default is FALSE and Davies method is used.</p></dd>
-
-
-<dt id="arg-nperm">nperm<a class="anchor" aria-label="anchor" href="#arg-nperm"></a></dt>
-<dd><p>If using permutations, how many permutations should be used?</p></dd>
-
-
-<dt id="arg-n-thresh">n.thresh<a class="anchor" aria-label="anchor" href="#arg-n-thresh"></a></dt>
-<dd><p>How many maximum radii should be considered?</p></dd>
 
 
 <dt id="arg-print-progress">print.progress<a class="anchor" aria-label="anchor" href="#arg-print-progress"></a></dt>
