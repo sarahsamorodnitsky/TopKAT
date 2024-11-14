@@ -33,7 +33,6 @@ We start by loading in the packages we will need in this vignette and our simula
 # Packages
 library(TopKAT)
 library(patchwork)
-library(gridExtra)
 library(survival)
 library(survminer)
 
@@ -44,7 +43,7 @@ data(data1.df)
 head(data1.df)
 ```
 
-As you can see, the data is organized so that each row corresponds to a cell within each image. The `PID` column refers to the sample or patient ID which, in this case, enumerates from `1` to `100`. The `id` column enumerates the image number within the sample since in many applications we have multiple images per patient. In this case, the `PID` and `id` columns are the same because we simulated a single image for each sample. The `x` and `y` columns denote the 2D coordinates of the cell locations. The `type` column contains a simulated type for each cell, ranging from `cell type 1` to `cell type 4`. 
+The data is organized so that each row corresponds to a cell within each image. The `PID` column refers to the sample or patient ID which, in this case, enumerates from `1` to `100`. The `id` column enumerates the image number within the sample since in many applications we have multiple images per patient. In this case, the `PID` and `id` columns are the same because we simulated a single image for each sample. The `x` and `y` columns denote the 2D coordinates of the cell locations. The `type` column contains a simulated type for each cell, ranging from `cell type 1` to `cell type 4`. 
 
 To simulate this data, we split the 100 samples into two groups of 50. For the first 50 samples, we generated random numbers of squares. For the latter 50, we generated random numbers of unit circles. For these two groups, we also simulated different survival outcomes. The outcomes were simulated from an exponential distribution with rates equal to $\log(2)$ and $\log(2)/2$, respectively. We randomly censored 10\% of samples. 
 
@@ -78,6 +77,7 @@ p4 <- data1.df %>% dplyr::filter(PID == 52) %>%
 The goal of TopKAT is to test whether images with similar geometric structures created by cells correspond to patients with similar outcomes (in this case, survival). The null hypothesis we wish to test is:
 
 $H_0$: There is no association between survival time and topological structure of cells
+
 $H_1$: There is an association between survival time and topological structure of cells
 
 If the TopKAT p-value is small, this is evidence against $H_0$. 
@@ -123,7 +123,8 @@ K.cc <- simmat$K.list[[1]] %>%
   geom_tile(color = "white") +
   theme_bw() +
   xlab("Image 1") + ylab("Image 2") +
-  ggtitle("Kernel Matrix for Connected Components")
+  ggtitle("Kernel Matrix for Connected Components") +
+  theme(legend.text = element_text(angle = 45, hjust = 1))
   
 
 # Visualize the kernel matrices for the loops
@@ -133,7 +134,8 @@ K.loop <- simmat$K.list[[2]] %>%
   geom_tile(color = "white") +
   theme_bw() +
   xlab("Image 1") + ylab("Image 2") +
-  ggtitle("Kernel Matrix for Loops")
+  ggtitle("Kernel Matrix for Loops") +
+  theme(legend.text = element_text(angle = 45, hjust = 1))
 
 # Arrange the plots
 K.cc + K.loop & theme(legend.position = "bottom")
@@ -141,7 +143,7 @@ K.cc + K.loop & theme(legend.position = "bottom")
 
 Finally, we can test for an association with survival given the kernel matrices we computed above. Since we have two kernel matrices, we may want to aggregate our association results across both homologies. We will construct a linear combination of the kernel matrices and aggregate results across different mixtures. A straightforward choice of weights is $\omega = (0, 0.5, 1)$ in the following linear combination:
 
-$ K^{agg} = (1-\omega) K_0 + \omega K_1$
+$K^{agg} = (1-\omega) K_0 + \omega K_1$
 
 We now apply TopKAT. As shown below, the TopKAT p-value is significant, $3\times 10^{-5}$. 
 
@@ -163,9 +165,9 @@ res$p.vals
 
 ## Descriptive Post-Hoc Analyses
 
-So far, we have shown that there is a significant association between the geometric arrangements of cells in the images and survival. We can now explore which distances are most ``important" (i.e., significant) and assess which cell types are connected at this distance. 
+So far, we have shown that there is a significant association between the geometric arrangements of cells in the images and survival. We can now explore which distances are most ``important" (i.e., significantly associated with the outcome) and assess which cell types are connected at this distance. 
 
-To do this, we use the `scale_importance` function. This function iteratively runs `TopKAT` on an increasing sequence of radii and stores the resulting p-value at each radius. We will then examine the connections among the cells at this radius. We set the maximum radius (`threshold`) and the function will select a sequence of radii between $0$ and `threshold` to run TopKAT at.  
+To do this, we use the `scale_importance` function. Given a sequence of radii, this function iteratively runs `TopKAT`, thresholding the persistence diagrams at each radius. For each thresholded persistence diagram, the function then runs the same process: calculating the similarity between persistence diagrams and testing for an association with the outcome. The resulting p-value for each radius is stored and we will then examine the connections among the cells at the radius which yields the minimum p-value. We set the maximum radius (`threshold`) and the function will select a sequence of radii between $0$ and `threshold` to run TopKAT at.  
 
 ```{r scale importance}
 res_scale_import <- scale_importance(pd.list = simmat$rips.list,
