@@ -13,10 +13,6 @@ scale_importance(
   threshold,
   PIDs,
   outcome.type = "continuous",
-  method = "davies",
-  omnibus = "cauchy",
-  perm = FALSE,
-  nperm = 999,
   n.thresh = 50,
   print.progress = FALSE
 )
@@ -38,20 +34,6 @@ scale_importance(
 
 \item{outcome.type}{Outcome type, options include "continuous", "binary", or
 "survival"}
-
-\item{method}{Specifies how the kernel p-value should be calculated. Options
-include "davies" for an analytical p-value calculation or "permutation". Only
-for continuous or binary outcomes.}
-
-\item{omnibus}{If providing multiple kernel matrices, specify how the p-values
-should be combined. Defaults to "cauchy" for the Cauchy combination test.}
-
-\item{perm}{Required only for survival outcomes. Specifies if permutations should
-be used. Default is FALSE and Davies method is used.}
-
-\item{nperm}{If using permutations, how many permutations should be used?}
-
-\item{n.thresh}{How many maximum radii should be considered?}
 
 \item{print.progress}{Boolean, should progress be printed throughout analysis?}
 }

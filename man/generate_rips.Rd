@@ -18,7 +18,7 @@ Rips filtrations across images should be printed.}
 Returns a list of persistence diagrams for each image.
 }
 \description{
-Run the Rips filtration for each image and return a list of persistence diagrams.
+Construct a Rips filtration for each image and return a list of persistence diagrams.
 This is a helper function for \code{scale_importance}.
 }
 \examples{
