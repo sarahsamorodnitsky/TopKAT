@@ -5,6 +5,7 @@ vignette: >
   %\VignetteIndexEntry{example_sim_tissue}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: '`r system.file("bibliography.bib", package="TopKAT")`'
 ---
 
 ```{r, include = FALSE}
@@ -19,7 +20,7 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-In this vignette, we illustrate how to apply the `TopKAT` method to analyze cell-level imaging data. We simulated this data using the `scSpatialSIM` package to provide a more realistic example of applying `TopKAT` to imaging data with cell-level resolution. 
+In this vignette, we illustrate how to apply the `TopKAT` method to analyze cell-level imaging data. We simulated this data using the `scSpatialSIM` package [@soupir2024scspatialsim] to provide a more realistic example of applying `TopKAT` to imaging data with cell-level resolution. 
 
 ## Loading in the Data and Plotting
 

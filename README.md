@@ -22,4 +22,9 @@ devtools::install_github("sarahsamorodnitsky/TopKAT")
 Example usage of `TopKAT` to analyze data is provided in two vignetes:
 
 1. `Getting Started`: illustrates the application of TopKAT to a simulated dataset containing contrived shapes.
-2. `Simulated Tissue`: illustrates the application of TopKAT to a dataset simulated using the `scSpatialSIM` package. 
+2. `Simulated Tissue`: illustrates the application of TopKAT to a dataset simulated using the `scSpatialSIM` package. [[1]](#1)
+
+# References
+<a id="1">[1]</a> 
+Soupir, A. C., et al. (2024). scSpatialSIM: a simulator of spatial single-cell molecular data. bioRxiv, 2024-02.
+
