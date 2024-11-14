@@ -27,7 +27,7 @@ We start by loading in the packages we will need in this vignette and our simula
 
 ```{r setup}
 library(TopKAT)
-library(gridExtra)
+library(patchwork)
 library(survival)
 library(survminer)
 
@@ -64,13 +64,14 @@ p4 <- data2.df %>% dplyr::filter(PID == 52) %>%
   theme_bw() + ggtitle("Sample 52")
 
 # Arrange the plots
-gridExtra::grid.arrange(p1, p2, p3, p4, ncol = 2, nrow = 2)
+(p1 + p2 + p3 + p4 & theme(legend.position = "bottom")) + plot_layout(guides = "collect")
 ```
 ## Applying TopKAT
 
 The goal of TopKAT is to test whether images with similar geometric structures created by cells correspond to patients with similar outcomes (in this case, survival). The null hypothesis we wish to test is:
 
-$H_0$: There is no association between survival time and topological structure of cells
+$H_0$: There is no association between survival time and topological structure of cells \\
+
 $H_1$: There is an association between survival time and topological structure of cells
 
 If the TopKAT p-value is small, this is evidence against $H_0$. 
@@ -97,7 +98,7 @@ pd3 <- plot_persistence(simmat$rips.list[[51]], title = "Patient 51")
 pd4 <- plot_persistence(simmat$rips.list[[52]], title = "Patient 52")
 
 # Arrange the plots
-gridExtra::grid.arrange(pd1, pd2, pd3, pd4, ncol = 2, nrow = 2)
+(pd1 + pd2 + pd3 + pd4 & theme(legend.position = "bottom")) + plot_layout(guides = "collect")
 ```
 
 We also show a visualization of the kernel matrices to describe the similarities among the images. Note that the similarity values in the kernel matrices are not interpretable on their own and can only be used to compare the similarities between two pairs of images.
@@ -110,7 +111,8 @@ K.cc <- simmat$K.list[[1]] %>%
   geom_tile(color = "white") +
   theme_bw() +
   xlab("Image 1") + ylab("Image 2") +
-  ggtitle("Kernel Matrix for Connected Components")
+  ggtitle("Kernel Matrix for Connected Components") +
+  theme(legend.text = element_text(angle = 45, hjust = 1))
   
 
 # Visualize the kernel matrices for the loops
@@ -120,15 +122,16 @@ K.loop <- simmat$K.list[[2]] %>%
   geom_tile(color = "white") +
   theme_bw() +
   xlab("Image 1") + ylab("Image 2") +
-  ggtitle("Kernel Matrix for Loops")
+  ggtitle("Kernel Matrix for Loops") +
+  theme(legend.text = element_text(angle = 45, hjust = 1))
 
 # Arrange the plots
-gridExtra::grid.arrange(K.cc, K.loop, ncol = 2)
+K.cc + K.loop & theme(legend.position = "bottom")
 ```
 
 Finally, we can test for an association with survival given the kernel matrices we computed above. Since we have two kernel matrices, we may want to aggregate our association results across both homologies. We will construct a linear combination of the kernel matrices and aggregate results across different mixtures. A straightforward choice of weights is $\omega = (0, 0.5, 1)$ in the following linear combination:
 
-$ K^{agg} = (1-\omega) K_0 + \omega K_1$
+$K^{agg} = (1-\omega) K_0 + \omega K_1$
 
 We now apply TopKAT. As shown below, the TopKAT p-value is significant, $2\times 10^{-5}$. 
 
@@ -209,7 +212,7 @@ sc4 <- plot_cells_with_scale(
 )
 
 # Arrange the plots
-gridExtra::grid.arrange(sc1, sc2, sc3, sc4, nrow = 2, ncol = 2)
+sc1 + sc2 + sc3 + sc4
 ```
 
 Finally, we can examine the connectivity of the cell types at this radius using connectivity matrices. These matrices enumerate how many connections there are between cells at $r= 8.2$. We visualize these matrices for the four samples given above. 
@@ -249,7 +252,7 @@ c4 <- plot_cell_connections(
 )
 
 # Arrange the plots
-gridExtra::grid.arrange(c1, c2, c3, c4, nrow = 2, ncol = 2)
+c1 + c2 + c3 + c4
 ```
 
 It can also be illustrative to compute an average connectivity matrix across the whole cohort or within known patient samples, as shown below. 
