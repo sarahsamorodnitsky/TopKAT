@@ -97,7 +97,6 @@ our simulated data.</p>
 <span><span class="co">#&gt;   method         from  </span></span>
 <span><span class="co">#&gt;   print.response rmutil</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">gridExtra</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/survminer/index.html" class="external-link">survminer</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: ggplot2</span></span>
@@ -120,17 +119,17 @@ our simulated data.</p>
 <span><span class="co">#&gt; 4   1  1 44.48928 16.3068 cell type 4</span></span>
 <span><span class="co">#&gt; 5   1  1 45.48928 16.3068 cell type 3</span></span>
 <span><span class="co">#&gt; 6   1  1 46.48928 16.3068 cell type 3</span></span></code></pre></div>
-<p>As you can see, the data is organized so that each row corresponds to
-a cell within each image. The <code>PID</code> column refers to the
-sample or patient ID which, in this case, enumerates from <code>1</code>
-to <code>100</code>. The <code>id</code> column enumerates the image
-number within the sample since in many applications we have multiple
-images per patient. In this case, the <code>PID</code> and
-<code>id</code> columns are the same because we simulated a single image
-for each sample. The <code>x</code> and <code>y</code> columns denote
-the 2D coordinates of the cell locations. The <code>type</code> column
-contains a simulated type for each cell, ranging from
-<code>cell type 1</code> to <code>cell type 4</code>.</p>
+<p>The data is organized so that each row corresponds to a cell within
+each image. The <code>PID</code> column refers to the sample or patient
+ID which, in this case, enumerates from <code>1</code> to
+<code>100</code>. The <code>id</code> column enumerates the image number
+within the sample since in many applications we have multiple images per
+patient. In this case, the <code>PID</code> and <code>id</code> columns
+are the same because we simulated a single image for each sample. The
+<code>x</code> and <code>y</code> columns denote the 2D coordinates of
+the cell locations. The <code>type</code> column contains a simulated
+type for each cell, ranging from <code>cell type 1</code> to
+<code>cell type 4</code>.</p>
 <p>To simulate this data, we split the 100 samples into two groups of
 50. For the first 50 samples, we generated random numbers of squares.
 For the latter 50, we generated random numbers of unit circles. For
@@ -179,8 +178,8 @@ structures created by cells correspond to patients with similar outcomes
 (in this case, survival). The null hypothesis we wish to test is:</p>
 <p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>H</mi><mn>0</mn></msub><annotation encoding="application/x-tex">H_0</annotation></semantics></math>:
 There is no association between survival time and topological structure
-of cells
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>H</mi><mn>1</mn></msub><annotation encoding="application/x-tex">H_1</annotation></semantics></math>:
+of cells</p>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>H</mi><mn>1</mn></msub><annotation encoding="application/x-tex">H_1</annotation></semantics></math>:
 There is an association between survival time and topological structure
 of cells</p>
 <p>If the TopKAT p-value is small, this is evidence against
@@ -251,7 +250,8 @@ to compare the similarities between two pairs of images.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_tile</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Image 1"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Image 2"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Kernel Matrix for Connected Components"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Kernel Matrix for Connected Components"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span>  </span>
 <span></span>
 <span><span class="co"># Visualize the kernel matrices for the loops</span></span>
@@ -261,7 +261,8 @@ to compare the similarities between two pairs of images.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_tile</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Image 1"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Image 2"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Kernel Matrix for Loops"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Kernel Matrix for Loops"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Arrange the plots</span></span>
 <span><span class="va">K.cc</span> <span class="op">+</span> <span class="va">K.loop</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
@@ -274,7 +275,7 @@ results across different mixtures. A straightforward choice of weights
 is
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ω</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>0.5</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\omega = (0, 0.5, 1)</annotation></semantics></math>
 in the following linear combination:</p>
-<p>$ K^{agg} = (1-) K_0 + K_1$</p>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>K</mi><mrow><mi>a</mi><mi>g</mi><mi>g</mi></mrow></msup><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>ω</mi><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>K</mi><mn>0</mn></msub><mo>+</mo><mi>ω</mi><msub><mi>K</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">K^{agg} = (1-\omega) K_0 + \omega K_1</annotation></semantics></math></p>
 <p>We now apply TopKAT. As shown below, the TopKAT p-value is
 significant,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>×</mo><msup><mn>10</mn><mrow><mo>−</mo><mn>5</mn></mrow></msup></mrow><annotation encoding="application/x-tex">3\times 10^{-5}</annotation></semantics></math>.</p>
@@ -299,14 +300,19 @@ combination of kernel matrices:</p>
 </h2>
 <p>So far, we have shown that there is a significant association between
 the geometric arrangements of cells in the images and survival. We can
-now explore which distances are most ``important” (i.e., significant)
-and assess which cell types are connected at this distance.</p>
-<p>To do this, we use the <code>scale_importance</code> function. This
-function iteratively runs <code>TopKAT</code> on an increasing sequence
-of radii and stores the resulting p-value at each radius. We will then
-examine the connections among the cells at this radius. We set the
-maximum radius (<code>threshold</code>) and the function will select a
-sequence of radii between
+now explore which distances are most ``important” (i.e., significantly
+associated with the outcome) and assess which cell types are connected
+at this distance.</p>
+<p>To do this, we use the <code>scale_importance</code> function. Given
+a sequence of radii, this function iteratively runs <code>TopKAT</code>,
+thresholding the persistence diagrams at each radius. For each
+thresholded persistence diagram, the function then runs the same
+process: calculating the similarity between persistence diagrams and
+testing for an association with the outcome. The resulting p-value for
+each radius is stored and we will then examine the connections among the
+cells at the radius which yields the minimum p-value. We set the maximum
+radius (<code>threshold</code>) and the function will select a sequence
+of radii between
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>
 and <code>threshold</code> to run TopKAT at.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
