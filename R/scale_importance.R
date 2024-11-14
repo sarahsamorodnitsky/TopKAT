@@ -170,7 +170,7 @@ scale_importance <- function(pd.list, y, X = NULL, cens = NULL, omega.list, thre
       }
 
       # Save the result
-      pvals <- c(pvals, res$overall.pval)
+      pvals <- c(pvals, res$p_values)
 
     }
 
