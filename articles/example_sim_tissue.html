@@ -300,25 +300,25 @@ like for our example images:</p>
 <span><span class="va">sc1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cells_with_scale.html">plot_cells_with_scale</a></span><span class="op">(</span></span>
 <span>  image <span class="op">=</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="va">res_scale_import</span><span class="op">$</span><span class="va">min.thresh</span>,</span>
-<span>  title <span class="op">=</span> <span class="st">"Simplicial Complex for Sample 1"</span></span>
+<span>  title <span class="op">=</span> <span class="st">"Simplicial Complex for \n Sample 1"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sc2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cells_with_scale.html">plot_cells_with_scale</a></span><span class="op">(</span></span>
 <span>  image <span class="op">=</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="va">res_scale_import</span><span class="op">$</span><span class="va">min.thresh</span>,</span>
-<span>  title <span class="op">=</span> <span class="st">"Simplicial Complex for Sample 2"</span></span>
+<span>  title <span class="op">=</span> <span class="st">"Simplicial Complex for \n Sample 2"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sc3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cells_with_scale.html">plot_cells_with_scale</a></span><span class="op">(</span></span>
 <span>  image <span class="op">=</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">51</span><span class="op">)</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="va">res_scale_import</span><span class="op">$</span><span class="va">min.thresh</span>,</span>
-<span>  title <span class="op">=</span> <span class="st">"Simplicial Complex for Sample 51"</span></span>
+<span>  title <span class="op">=</span> <span class="st">"Simplicial Complex for \n Sample 51"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sc4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cells_with_scale.html">plot_cells_with_scale</a></span><span class="op">(</span></span>
 <span>  image <span class="op">=</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">52</span><span class="op">)</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="va">res_scale_import</span><span class="op">$</span><span class="va">min.thresh</span>,</span>
-<span>  title <span class="op">=</span> <span class="st">"Simplicial Complex for Sample 52"</span></span>
+<span>  title <span class="op">=</span> <span class="st">"Simplicial Complex for \n Sample 52"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Arrange the plots</span></span>
@@ -337,15 +337,15 @@ We visualize these matrices for the four samples given above.</p>
 <span>  title <span class="op">=</span> <span class="st">"Cell Connectivity for Patient 1"</span>,</span>
 <span>  type.column <span class="op">=</span> <span class="st">"type"</span>,</span>
 <span>  unique.types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data2.df</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
+<span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"# of Connections"</span><span class="op">)</span></span>
+<span> </span>
 <span><span class="va">c2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cell_connections.html">plot_cell_connections</a></span><span class="op">(</span></span>
 <span>  image <span class="op">=</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="va">res_scale_import</span><span class="op">$</span><span class="va">min.thresh</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Cell Connectivity for Patient 2"</span>,</span>
 <span>  type.column <span class="op">=</span> <span class="st">"type"</span>,</span>
 <span>  unique.types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data2.df</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"# of Connections"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">c3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cell_connections.html">plot_cell_connections</a></span><span class="op">(</span></span>
 <span>  image <span class="op">=</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">51</span><span class="op">)</span>,</span>
@@ -353,7 +353,7 @@ We visualize these matrices for the four samples given above.</p>
 <span>  title <span class="op">=</span> <span class="st">"Cell Connectivity for Patient 51"</span>,</span>
 <span>  type.column <span class="op">=</span> <span class="st">"type"</span>,</span>
 <span>  unique.types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data2.df</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"# of Connections"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">c4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_cell_connections.html">plot_cell_connections</a></span><span class="op">(</span></span>
 <span>  image <span class="op">=</span> <span class="va">data2.df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PID</span> <span class="op">==</span> <span class="fl">52</span><span class="op">)</span>,</span>
@@ -361,7 +361,7 @@ We visualize these matrices for the four samples given above.</p>
 <span>  title <span class="op">=</span> <span class="st">"Cell Connectivity for Patient 52"</span>,</span>
 <span>  type.column <span class="op">=</span> <span class="st">"type"</span>,</span>
 <span>  unique.types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data2.df</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"# of Connections"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Arrange the plots</span></span>
 <span><span class="va">c1</span> <span class="op">+</span> <span class="va">c2</span> <span class="op">+</span> <span class="va">c3</span> <span class="op">+</span> <span class="va">c4</span></span></code></pre></div>
