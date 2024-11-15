@@ -71,7 +71,7 @@ p4 <- data2.df %>% dplyr::filter(PID == 52) %>%
 
 The goal of TopKAT is to test whether images with similar geometric structures created by cells correspond to patients with similar outcomes (in this case, survival). The null hypothesis we wish to test is:
 
-$H_0$: There is no association between survival time and topological structure of cells \\
+$H_0$: There is no association between survival time and topological structure of cells 
 
 $H_1$: There is an association between survival time and topological structure of cells
 
