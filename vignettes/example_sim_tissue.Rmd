@@ -191,25 +191,25 @@ We can also examine what the simplicial complex at this radius looks like for ou
 sc1 <- plot_cells_with_scale(
   image = data2.df %>% dplyr::filter(PID == 1),
   threshold = res_scale_import$min.thresh,
-  title = "Simplicial Complex for Sample 1"
+  title = "Simplicial Complex for \n Sample 1"
 )
 
 sc2 <- plot_cells_with_scale(
   image = data2.df %>% dplyr::filter(PID == 2),
   threshold = res_scale_import$min.thresh,
-  title = "Simplicial Complex for Sample 2"
+  title = "Simplicial Complex for \n Sample 2"
 )
 
 sc3 <- plot_cells_with_scale(
   image = data2.df %>% dplyr::filter(PID == 51),
   threshold = res_scale_import$min.thresh,
-  title = "Simplicial Complex for Sample 51"
+  title = "Simplicial Complex for \n Sample 51"
 )
 
 sc4 <- plot_cells_with_scale(
   image = data2.df %>% dplyr::filter(PID == 52),
   threshold = res_scale_import$min.thresh,
-  title = "Simplicial Complex for Sample 52"
+  title = "Simplicial Complex for \n Sample 52"
 )
 
 # Arrange the plots
@@ -226,15 +226,15 @@ c1 <- plot_cell_connections(
   title = "Cell Connectivity for Patient 1",
   type.column = "type",
   unique.types = unique(data2.df$type)
-)
-
+) + labs(fill = "# of Connections")
+ 
 c2 <- plot_cell_connections(
   image = data2.df %>% dplyr::filter(PID == 2),
   threshold = res_scale_import$min.thresh,
   title = "Cell Connectivity for Patient 2",
   type.column = "type",
   unique.types = unique(data2.df$type)
-)
+) + labs(fill = "# of Connections")
 
 c3 <- plot_cell_connections(
   image = data2.df %>% dplyr::filter(PID == 51),
@@ -242,7 +242,7 @@ c3 <- plot_cell_connections(
   title = "Cell Connectivity for Patient 51",
   type.column = "type",
   unique.types = unique(data2.df$type)
-)
+) + labs(fill = "# of Connections")
 
 c4 <- plot_cell_connections(
   image = data2.df %>% dplyr::filter(PID == 52),
@@ -250,7 +250,7 @@ c4 <- plot_cell_connections(
   title = "Cell Connectivity for Patient 52",
   type.column = "type",
   unique.types = unique(data2.df$type)
-)
+) + labs(fill = "# of Connections")
 
 # Arrange the plots
 c1 + c2 + c3 + c4
