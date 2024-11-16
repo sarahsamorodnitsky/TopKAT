@@ -2,7 +2,7 @@
 % Please edit documentation in R/scale_importance.R
 \name{scale_importance}
 \alias{scale_importance}
-\title{Quantifying the importance of various scale parameters}
+\title{Quantifying the importance of scale}
 \usage{
 scale_importance(
   pd.list,
@@ -35,23 +35,26 @@ scale_importance(
 \item{outcome.type}{Outcome type, options include "continuous", "binary", or
 "survival"}
 
+\item{n.thresh}{Number of distances between cells to evaluate. Default is 50}
+
 \item{print.progress}{Boolean, should progress be printed throughout analysis?}
 }
 \value{
 Returns a list with the following elements:
 \describe{
-\item{min.thresh}{The radius value at which the lowest TopKAT p-value was obtained}
+\item{min.thresh}{The distance value at which the lowest TopKAT p-value was obtained}
 \item{pvals}{The vector of TopKAT p-values for each radius value}
-\item{threshold.seq}{The vector of maximum radii considered}
+\item{threshold.seq}{The vector of distances considered}
 }
 }
 \description{
-Identify which radii are most important in characterizing an association
+Identify which distance is most important in characterizing an association
 between the topological structure in each image and outcomes.
 }
 \details{
-The arguments for \code{method}, \code{omnibus}, \code{perm}, and \code{nperm} should match
-what was used in the TopKAT analysis.
+This function identifies the distance at which the features which have
+been born and died during the process of filtration are most associated with
+the outcome.
 }
 \examples{
 # Generate a persistence diagram based on a Rips filtration for each image
