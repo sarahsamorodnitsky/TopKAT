@@ -51,9 +51,9 @@ generate_rips <- function(images.df, max.threshold, print.progress = TRUE) {
 
 }
 
-#' Quantifying the importance of various scale parameters
+#' Quantifying the importance of scale
 #'
-#' Identify which radii are most important in characterizing an association
+#' Identify which distance is most important in characterizing an association
 #' between the topological structure in each image and outcomes.
 #'
 #' @param pd.list List of persistence diagrams
@@ -65,16 +65,18 @@ generate_rips <- function(images.df, max.threshold, print.progress = TRUE) {
 #' @param PIDs Vector of patient IDs
 #' @param outcome.type Outcome type, options include "continuous", "binary", or
 #' "survival"
+#' @param n.thresh Number of distances between cells to evaluate. Default is 50
 #' @param print.progress Boolean, should progress be printed throughout analysis?
 #'
-#' @details The arguments for `method`, `omnibus`, `perm`, and `nperm` should match
-#' what was used in the TopKAT analysis.
+#' @details This function identifies the distance at which the features which have
+#' been born and died during the process of filtration are most associated with
+#' the outcome.
 #'
 #' @return Returns a list with the following elements:
 #' \describe{
-#' \item{min.thresh}{The radius value at which the lowest TopKAT p-value was obtained}
+#' \item{min.thresh}{The distance value at which the lowest TopKAT p-value was obtained}
 #' \item{pvals}{The vector of TopKAT p-values for each radius value}
-#' \item{threshold.seq}{The vector of maximum radii considered}
+#' \item{threshold.seq}{The vector of distances considered}
 #' }
 #' @export
 #'
