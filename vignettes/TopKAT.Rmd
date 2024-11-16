@@ -2,7 +2,7 @@
 title: "TopKAT"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{my-vignette}
+  %\VignetteIndexEntry{TopKAT}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -180,33 +180,28 @@ tail(simmat$rips.list[[51]])
 This image exhibits three loops of equal diameter, $33$ units. Looking at the birth and death scales associated with the loops in this image, three loops were born at $3.567928$ and died at $29.155897$. For a sequence of distances, $t = 0, \dots, T$, we threshold the persistence diagram to features that were born and died by distance $t$, as illustrated below:
 
 ```{r thresholded persistence diagrams}
+# Save the corresponding persistence diagram
+pd <- as.data.frame(simmat$rips.list[[51]])
+
 # Threshold at t = 5
-pd3.1 <- plot_persistence(simmat$rips.list[[51]] %>%
-                            as.data.frame() %>%
-                            filter(birth <= 5 & death <= 5), 
+pd3.1 <- plot_persistence(pd %>% dplyr::filter(birth <= 5 & death <= 5), 
                           title = "Patient 51 \n Threshold at t=5",
                           dims = c(15, 15))
 
 # Threshold at t=10
-pd3.2 <- plot_persistence(simmat$rips.list[[51]] %>%
-                            as.data.frame() %>%
-                            filter(birth <= 10 & death <= 10), 
+pd3.2 <- plot_persistence(pd %>% dplyr::filter(birth <= 10 & death <= 10), 
                           title = "Patient 51 \n Threshold at t=10",
                           dims = c(15, 15))
 
 
 # Threshold at t=15
-pd3.3 <- plot_persistence(simmat$rips.list[[51]] %>%
-                            as.data.frame() %>%
-                            filter(birth <= 15 & death <= 15), 
+pd3.3 <- plot_persistence(pd %>% dplyr::filter(birth <= 15 & death <= 15), 
                           title = "Patient 51 \n Threshold at t=15",
                           dims = c(15, 15))
 
 
 # Threshold at t=20
-pd3.4 <- plot_persistence(simmat$rips.list[[51]] %>%
-                            as.data.frame() %>%
-                            filter(birth <= 20 & death <= 20), 
+pd3.4 <- plot_persistence(pd %>% dplyr::filter(birth <= 20 & death <= 20), 
                           title = "Patient 51 \n Threshold at t=20",
                           dims = c(15, 15))
 
