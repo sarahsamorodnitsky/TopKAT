@@ -50,3 +50,24 @@
 #' @format ## `cens`
 #' A vector of length 100 of event indicators.
 "cens"
+
+#' MIBI Data from study in Triple Negative Breast Csancer
+#'
+#' This dataset contains simulated data. The images were split into two groups.
+#' The first group was simulated to have large squares. The second group was
+#' simulated to have loops. This dataset contains 100 samples.
+#'
+#' @format ## `tnbc`
+#' A data frame with 175497 rows and 8 columns:
+#' \describe{
+#'   \item{SampleID}{Patient ID}
+#'   \item{Group}{Indicates cell type. 2=immune cell, 6=keratin-positive tumor cell}
+#'   \item{immuneGroup}{Indicates more granular immune cell type defintion}
+#'   \item{x}{x-coordinate of each cell}
+#'   \item{y}{y-coordinate of each cell}
+#'   \item{Survival_days_capped*}{Time-to-death in days}
+#'   \item{Censored}{Survival event indicator (1=had event; 0=censored)}
+#'   \item{Class}{Tumor microenvironment class. 0=mixed; 1=compartmentalized; 2=cold}
+#' }
+#' @references Keren, L., Bosse, M., Marquez, D., Angoshtari, R., Jain, S., Varma, S., ... & Angelo, M. (2018). A structured tumor-immune microenvironment in triple negative breast cancer revealed by multiplexed ion beam imaging. Cell, 174(6), 1373-1387.
+"tnbc"
