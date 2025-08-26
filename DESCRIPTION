@@ -24,7 +24,7 @@ Imports:
     ggtda
 Remotes: tdaverse/ggtda
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5)
 LazyData: true
 Suggests: 
     knitr,
