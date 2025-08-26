@@ -1,0 +1,419 @@
+---
+title: "Application of TopKAT to a Study of Triple Negative Breast Cancer"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{tnbc_application}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib
+---
+
+# Package and Data Import
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette demonstrates the application of TopKAT to a study in triple negative breast cancer (TNBC) using MIBI-TOF to probe the tumor microenvironment in breast cancer biopsies. The data was originally published in @keren2018structured. 
+
+Keren et al. observed that tumor biopsies could be categorized based on the degree of mixing between immune cells and tumor cells. In some biopsies, immune and tumor cells colocalized and interspersed together throughout the tumor. These biopsies were referred to as ``mixed" biopsies. In others, immune cells and tumor cells segregated into different regions, forming connected components and loops around each other. These biopsies were called ``compartmentalized." Finally, some biopsies contained very few immune cells altogether and were referred to as a ``cold" biopsies. The apparent differences in spatial patterns among immune cells across these biopsies motivated this as an application of TopKAT, which we illustrate here.  
+
+The dataset, `tnbc` is lazily loaded with the import of the `TopKAT` package. We start by importing packages we will need for our analysis. 
+
+```{r setup}
+# Packages
+library(TopKAT)
+library(dplyr)
+library(ACAT)
+library(ggplot2)
+library(tidyr)
+library(gtools)
+library(MiRKAT)
+library(TDAstats)
+library(viridis)
+library(patchwork)
+
+# Load in the data
+data(tnbc)
+```
+
+We first save perform some basics with the data. We label the cell types identified in the data, including non-immune cells (tumor cells, epithelial cells, mesenchymal cells, and endothelial cells) and several immune cell types, including Tregs, CD4 T cells, CD8 T cells, CD3 T cells, NK cells, B cells, neutrophils, macrophages, dendritic cells, DC/monocytes, monocytes/neutrophils, and other unidentified cell types. We have filtered the dataset already to include just immune and keratin-positive tumor cells. The documentation for the cell types is published online alongside the original publication. 
+
+We also save the number of biopsies in this dataset, $n=38$ from 38 different patients. 
+
+```{r load in and prepare the data}
+# Label the cell types
+tnbc$immuneGroup <- factor(tnbc$immuneGroup)
+levels(tnbc$immuneGroup) <- c("Non-Immune", "Treg", "CD4 T", "CD8 T", "CD3 T", "NK",
+                              "B cell", "Neutrophil", "Macrophage", "Dendritic",
+                              "DC/Mono", "Mono/Neu", "Other")
+
+# Rename and save the patient IDs
+PIDs <- as.numeric(unique(tnbc$SampleID))
+
+# Save the number of patients
+n <- length(PIDs)
+```
+
+The biopsy categories (mixed, compartmentalized, cold) are given in the column `tnbc$Class` which has three levels, 0, 1, and 2. The coding is as follows:
+
+* 0 = mixed
+* 1 = compartmentalized
+* 2 = cold
+
+Below, we demonstrate several images from the dataset to demonstrate the different patterns among immune cells and tumor cells. The classification of the biopsies is given in the figure titles. The figures illustrate that mixed samples show a scatter of immune and tumor cells throughout the tumor microenvironment, whereas compartmentalized samples show distinct clusters of immune cells separate from tumor cells. 
+
+```{r visualizing some samples}
+p1_ti <- tnbc %>%
+  filter(SampleID == 1) %>%
+  mutate(Group = factor(Group)) %>%
+  ggplot(aes(x = x, y = y, fill = Group)) + 
+  geom_point(color = "black", pch = 21) +
+  theme_bw() +
+  viridis::scale_fill_viridis(discrete = TRUE, begin = 0.35, end = 0.75,
+                             labels = c("Immune", "Tumor"),
+                             name = "Cell Type") +
+  ggtitle("Example Image from Patient 1 (Mixed)")
+
+p2_ti <- tnbc %>%
+  filter(SampleID == 2) %>%
+  mutate(Group = factor(Group)) %>%
+  ggplot(aes(x = x, y = y, fill = Group)) + 
+  geom_point(color = "black", pch = 21) +
+  theme_bw() +
+  viridis::scale_fill_viridis(discrete = TRUE, begin = 0.35, end = 0.75,
+                             labels = c("Immune", "Tumor"),
+                             name = "Cell Type") +
+  ggtitle("Example Image from Patient 2 (Mixed)")
+
+p3_ti <- tnbc %>%
+  filter(SampleID == 3) %>%
+  mutate(Group = factor(Group)) %>%
+  ggplot(aes(x = x, y = y, fill = Group)) + 
+  geom_point(color = "black", pch = 21) +
+  theme_bw() +
+  viridis::scale_fill_viridis(discrete = TRUE, begin = 0.35, end = 0.75,
+                             labels = c("Immune", "Tumor"),
+                             name = "Cell Type") +
+  ggtitle("Example Image from Patient 3 (Compartmentalized)")
+
+p4_ti <- tnbc %>%
+  filter(SampleID == 4) %>%
+  mutate(Group = factor(Group)) %>%
+  ggplot(aes(x = x, y = y, fill = Group)) + 
+  geom_point(color = "black", pch = 21) +
+  theme_bw() +
+  viridis::scale_fill_viridis(discrete = TRUE, begin = 0.35, end = 0.75,
+                             labels = c("Immune", "Tumor"),
+                             name = "Cell Type") +
+  ggtitle("Example Image from Patient 4 (Compartmentalized)")
+
+# Plot
+p1_ti + p2_ti +
+  p3_ti + p4_ti +
+  plot_layout(ncol = 2, nrow = 2)
+```
+
+The goals of this analysis are two-fold. The first goal is to relate the topological structures among immune cells to overall patient survival. The second is to describe the distinctions among mixed, compartmentalized, and cold samples topologically.  For both goals, we focus on capturing the topological structures created by just the immune cells. 
+
+To address both goals, we are going to be applying TopKAT to just the immune cells. Below, we visualize the same figures above with just the immune cells shown. 
+
+```{r filtering to just immune cells and visualizing}
+p1_i <- tnbc %>%
+  filter(SampleID == 1) %>%
+  filter(Group == 2) %>%
+  mutate(Group = factor(Group)) %>%
+  ggplot(aes(x = x, y = y, fill = Group)) + 
+  geom_point(color = "black", pch = 21) +
+  theme_bw() +
+  viridis::scale_fill_viridis(discrete = TRUE, begin = 0.35, end = 0.75,
+                             labels = c("Immune"),
+                             name = "Cell Type") +
+  ggtitle("Example Image from Patient 1 (Mixed)")
+
+p2_i <- tnbc %>%
+  filter(SampleID == 2) %>%
+  filter(Group == 2) %>%
+  mutate(Group = factor(Group)) %>%
+  ggplot(aes(x = x, y = y, fill = Group)) + 
+  geom_point(color = "black", pch = 21) +
+  theme_bw() +
+  viridis::scale_fill_viridis(discrete = TRUE, begin = 0.35, end = 0.75,
+                             labels = c("Immune"),
+                             name = "Cell Type") +
+  ggtitle("Example Image from Patient 2 (Mixed)")
+
+p3_i <- tnbc %>%
+  filter(SampleID == 3) %>%
+  filter(Group == 2) %>%
+  mutate(Group = factor(Group)) %>%
+  ggplot(aes(x = x, y = y, fill = Group)) + 
+  geom_point(color = "black", pch = 21) +
+  theme_bw() +
+  viridis::scale_fill_viridis(discrete = TRUE, begin = 0.35, end = 0.75,
+                             labels = c("Immune"),
+                             name = "Cell Type") +
+  ggtitle("Example Image from Patient 3 (Compartmentalized)")
+
+p4_i <- tnbc %>%
+  filter(SampleID == 4) %>%
+  filter(Group == 2) %>%
+  mutate(Group = factor(Group)) %>%
+  ggplot(aes(x = x, y = y, fill = Group)) + 
+  geom_point(color = "black", pch = 21) +
+  theme_bw() +
+  viridis::scale_fill_viridis(discrete = TRUE, begin = 0.35, end = 0.75,
+                             labels = c("Immune"),
+                             name = "Cell Type") +
+  ggtitle("Example Image from Patient 4 (Compartmentalized)")
+
+p1_i + p2_i + 
+  p3_i + p4_i +
+  plot_layout(ncol = 2, nrow = 2)
+```
+
+# Applying TopKAT
+
+The first step in applying TopKAT is to construct a filtration. The process of filtration creates a series of nested graphs where each cell is a node and edges are drawn between cells if they are no more than some distance $\epsilon$ apart. The goal of applying a filtration is to capture the size (or ``lifespan") of homologies created among the, in our case, immune cells. Homologies are the topological structures (connected components and loops), which we wish to capture. 
+
+We first subset the data to just the immune cells (denoted by ``Group == 2"). We then construct a Rips filtration for each image on the basis of just the immune cells. The topological structures detected throughout filtration are summarized in a summary statistic called a persistence diagram, which are visualized below. 
+
+```{r immune cell filtration}
+# Save just the immune cells
+tnbc.immune <- tnbc %>% filter(Group == 2)
+tnbc.immune$immuneGroup <- droplevels(tnbc.immune$immuneGroup)
+
+# Create a list to store the PDs
+PD.list <- lapply(1:n, function(i) list())
+
+# Iterate through the IDs and generate a Rips complex for the immune cells
+for (i in PIDs) {
+
+  # Print progress
+  print(paste0(which(PIDs %in% i), "/", length(PIDs)))
+
+  # Subset the data to just this PID
+  data.i <- tnbc.immune %>%
+    filter(SampleID == i) %>%
+    dplyr::select(x,y)
+
+  # Construct a Rips filtration using TDAstats
+  rips.i <- TDAstats::calculate_homology(data.i, dim = 1, threshold = 2048)
+
+  # Save the results
+  PD.list[[which(PIDs %in% i)]] <- rips.i
+}
+
+# Visualize a few examples
+pd1 <- plot_persistence(PD.list[[1]], title = "Sample 1 (Mixed)", dims = c(300, 300))
+pd2 <- plot_persistence(PD.list[[2]], title = "Sample 2 (Mixed)", dims = c(300, 300))
+pd3 <- plot_persistence(PD.list[[1]], title = "Sample 3 \n (Compartmentalized)", dims = c(300, 300))
+pd4 <- plot_persistence(PD.list[[2]], title = "Sample 4 \n (Compartmentalized)", dims = c(300, 300))
+
+pd1 + pd2 + 
+  pd3 + pd4 +
+  plot_layout(ncol = 2, nrow = 2)
+```
+
+After we have calculated a persistence diagram for each image, we then can associate these persistence diagrams with an outcome. To do this, we use a kernel machine regression framework. For this, we need to construct a kernel matrix which quantifies the similarities among pairs of persistence diagrams. To obtain a kernel matrix, we first start by calculating a pairwise dissimilarity matrix. The process then is:
+
+1. Calculate pairwise dissimilarity matrix between persistence diagrams
+2. Convert the pairwise dissimilarity matrix to a pairwise kernel matrix to quantify similarity (rather than dissimilarity)
+3. Input kernel matrix in a kernel machine regression framework with an outcome. 
+
+The construction of the dissimilarity and kernel matrices occurs separately for both connected components and loops. We first start by generating pairs of sample IDs to iterate through. Then we initialize our pairwise $38\times 38$ distance matrices. Then we iterate through all the pairs of persistence diagrams and calculate the distance between them. 
+
+```{r calculate the pairwise dissimilarity between PDs}
+# Create all pairs of samples
+pairs <- gtools::combinations(n = n, r = 2, v = sort(PIDs), repeats.allowed = FALSE)
+
+# Initialize a distance matrix (comparing the matrices based on distance)
+dist.mat.deg0 <- dist.mat.deg1 <- matrix(0, nrow = n, ncol = n)
+
+# Add names
+rownames(dist.mat.deg0) <- colnames(dist.mat.deg0) <-
+  rownames(dist.mat.deg1) <- colnames(dist.mat.deg1) <-
+  PIDs
+
+# Iterate through pairs and calculate distance
+for (i in 1:nrow(pairs)) {
+
+  # Print progress
+  print(paste0(i, "/", nrow(pairs)))
+
+  # Save the current pair
+  ids <- pairs[i,]
+  id.1 <- ids[1]
+  id.2 <- ids[2]
+
+  # Load in the diagrams
+  rips.1 <- PD.list[[which(PIDs %in% id.1)]]
+  rips.2 <- PD.list[[which(PIDs %in% id.2)]]
+
+  # Calculate distance
+  dist.i <- phom.dist(rips.1, rips.2)
+
+  # Save the results
+  row.ind <- which(rownames(dist.mat.deg0) == id.1)
+  col.ind <- which(rownames(dist.mat.deg0) == id.2)
+
+  dist.mat.deg0[row.ind, col.ind] <- dist.i[1]
+  dist.mat.deg1[row.ind, col.ind] <- dist.i[2]
+}
+```
+
+Now that we have our distance matrices prepared, we can convert them to kernel matrices and input them in our kernel machine regression framework. We start by filling in the lower triangular portion of the distance matrix (since we only filled in the upper half above). We then convert it to a kernel matrix using a Gower centered kernel with the function `MiRKAT::D2K` function. Since we have two kernel matrices, we consider a sequence of linear combinations of the two in our test. We start by testing for an association with just the kernel matrix based on connected components ($\omega=0$ in the code), based on a 50-50 even contribution from both kernel matrices ($\omega=0.5$), and just the kernel matrix based on loops ($\omega=1$). 
+
+For our first analytical goal, we test for an association with overall survival. Below, we demonstrate how to extract the survival times, censoring indicator, and age of each patient, which we adjust for in our test. 
+
+The resulting kernel association testing p-value is printed below. We observed a significant association in the topological structures among immune cells and overall survival. 
+
+```{r predict survival}
+# Convert the distance matrices to symmetric matrices
+dist.mat.deg0 <- dist.mat.deg0 + t(dist.mat.deg0)
+dist.mat.deg1 <- dist.mat.deg1 + t(dist.mat.deg1)
+
+# Construct kernel (similarity) matrix
+K.list <- list(dim0 = D2K(dist.mat.deg0), dim1 = D2K(dist.mat.deg1))
+
+# Set a list of weights
+omega.list <- c(0, 0.5, 1)
+
+# Save just the immune cells
+tnbc.immune <- tnbc %>% filter(Group == 2)
+
+# Subset the clinical data
+tnbc.immune.clin.only <- tnbc.immune %>%
+  dplyr::select(all_of(c("SampleID", "Survival_days_capped*", "Censored", "AGE_AT_DX", "Class"))) %>%
+  dplyr::distinct()
+
+# Convert the survival times, censor indicator, and age vectors to numeric
+tnbc.immune.clin.only$`Survival_days_capped*` <- as.numeric(tnbc.immune.clin.only$`Survival_days_capped*`)
+tnbc.immune.clin.only$Censored <- as.numeric(tnbc.immune.clin.only$Censored)
+tnbc.immune.clin.only$AGE_AT_DX <- as.numeric(tnbc.immune.clin.only$AGE_AT_DX)
+
+# Predict survival using Davies method
+survival.pred <- TopKAT(y = tnbc.immune.clin.only$`Survival_days_capped*`,
+                          X = matrix(tnbc.immune.clin.only$AGE_AT_DX),
+                          cens = tnbc.immune.clin.only$Censored,
+                          K.list = K.list,
+                          omega.list = omega.list,
+                          outcome.type = "survival")
+
+survival.pred$overall.pval
+```
+
+The second analytical goal is to compare the topological structures between mixed, compartmentalized, and cold samples. For this, we use the kernel matrices calculated above and do pairwise comparisons between mixed and compartmentalized, mixed and cold, and compartmentalized and cold samples. For each comparison, we treat category membership as a binary outcome in our kernel test. 
+
+The code below shows how we subset the kernel matrix and the outcomes to just samples within each class considered in the comparison. We print out the resulting p-values, which all show significant differences in the topological structure between biopsy classes. 
+
+```{r predict class}
+# First, do pairwise comparisons of each group --
+
+# 0/1
+dist.mat.deg0.0vs1 <- dist.mat.deg0[
+  rownames(dist.mat.deg0) %in% tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(0,1)],
+  colnames(dist.mat.deg0) %in% tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(0,1)]
+  ]
+
+dist.mat.deg1.0vs1 <- dist.mat.deg1[
+  rownames(dist.mat.deg1) %in% tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(0,1)],
+  colnames(dist.mat.deg1) %in% tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(0,1)]
+  ]
+
+# Check ordering
+all(rownames(dist.mat.deg0.0vs1) == tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(0,1)]) # TRUE!
+all(rownames(dist.mat.deg1.0vs1) == tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(0,1)]) # TRUE!
+
+all(colnames(dist.mat.deg0.0vs1) == tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(0,1)]) # TRUE!
+all(colnames(dist.mat.deg1.0vs1) == tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(0,1)]) # TRUE!
+
+# Construct kernel (similarity) matrix
+K.list.01 <- list(dim0 = D2K(dist.mat.deg0.0vs1), dim1 = D2K(dist.mat.deg1.0vs1))
+
+# Set the outcome
+class01 <- tnbc.immune.clin.only$Class
+class01 <- class01[class01 %in% c(0,1)]
+
+# Predict class
+class01.pred <- TopKAT(y = class01,
+                         K.list = K.list.01,
+                         omega.list = omega.list,
+                         outcome.type = "binary")
+
+class01.pred$overall.pval
+
+# 0/2
+dist.mat.deg0.0vs2 <- dist.mat.deg0[
+  rownames(dist.mat.deg0) %in% tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(0,2)],
+  colnames(dist.mat.deg0) %in% tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(0,2)]
+  ]
+
+dist.mat.deg1.0vs2 <- dist.mat.deg1[
+  rownames(dist.mat.deg1) %in% tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(0,2)],
+  colnames(dist.mat.deg1) %in% tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(0,2)]
+  ]
+
+# Check ordering
+all(rownames(dist.mat.deg0.0vs2) == tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(0,2)]) # TRUE!
+all(rownames(dist.mat.deg1.0vs2) == tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(0,2)]) # TRUE!
+
+all(colnames(dist.mat.deg0.0vs2) == tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(0,2)]) # TRUE!
+all(colnames(dist.mat.deg1.0vs2) == tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(0,2)]) # TRUE!
+
+# Construct kernel (similarity) matrix
+K.list.02 <- list(dim0 = D2K(dist.mat.deg0.0vs2), dim1 = D2K(dist.mat.deg1.0vs2))
+
+# Set the outcome
+class02 <- tnbc.immune.clin.only$Class
+class02 <- class02[class02 %in% c(0,2)]
+class02[class02 == 2] <- 1
+
+# Predict class
+class02.pred <- TopKAT(y = class02,
+                         K.list = K.list.02,
+                         omega.list = omega.list,
+                         outcome.type = "binary")
+
+class02.pred$overall.pval
+
+# 1/2
+dist.mat.deg0.1vs2 <- dist.mat.deg0[
+  rownames(dist.mat.deg0) %in% tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(1,2)],
+  colnames(dist.mat.deg0) %in% tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(1,2)]
+  ]
+
+dist.mat.deg1.1vs2 <- dist.mat.deg1[
+  rownames(dist.mat.deg1) %in% tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(1,2)],
+  colnames(dist.mat.deg1) %in% tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(1,2)]
+  ]
+
+# Check ordering
+all(rownames(dist.mat.deg0.1vs2) == tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(1,2)]) # TRUE!
+all(rownames(dist.mat.deg1.1vs2) == tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(1,2)]) # TRUE!
+
+all(colnames(dist.mat.deg0.1vs2) == tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(1,2)]) # TRUE!
+all(colnames(dist.mat.deg1.1vs2) == tnbc.immune.clin.only$SampleID[tnbc.immune.clin.only$Class %in% c(1,2)]) # TRUE!
+
+# Construct kernel (similarity) matrix
+K.list.12 <- list(dim0 = D2K(dist.mat.deg0.1vs2), dim1 = D2K(dist.mat.deg1.1vs2))
+
+# Set the outcome
+class12 <- tnbc.immune.clin.only$Class
+class12 <- class12[class12 %in% c(1,2)]
+class12[class12 == 1] <- 0
+class12[class12 == 2] <- 1
+
+# Predict class
+class12.pred <- TopKAT(y = class12,
+                         K.list = K.list.12,
+                         omega.list = omega.list,
+                         outcome.type = "binary")
+
+class12.pred$overall.pval
+```
+
+## Bibliography
