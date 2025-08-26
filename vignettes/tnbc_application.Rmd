@@ -115,7 +115,7 @@ p1_ti + p2_ti +
   plot_layout(ncol = 2, nrow = 2)
 ```
 
-![plot of chunk visualizing some samples](figure/visualizing some samples-1.png)
+![plot of chunk visualizing some samples](vignettes/figures/visualizing_some_samples_1.png)
 
 The goals of this analysis are two-fold. The first goal is to relate the topological structures among immune cells to overall patient survival. The second is to describe the distinctions among mixed, compartmentalized, and cold samples topologically.  For both goals, we focus on capturing the topological structures created by just the immune cells. 
 
@@ -176,7 +176,7 @@ p1_i + p2_i +
   plot_layout(ncol = 2, nrow = 2)
 ```
 
-![plot of chunk filtering to just immune cells and visualizing](figure/filtering to just immune cells and visualizing-1.png)
+![plot of chunk filtering to just immune cells and visualizing](vignettes/figures/filtering_to_just_immune_cells_and_visualizing_1.png)
 
 # Applying TopKAT
 
@@ -260,7 +260,7 @@ pd1 + pd2 +
   plot_layout(ncol = 2, nrow = 2)
 ```
 
-![plot of chunk immune cell filtration](figure/immune cell filtration-1.png)
+![plot of chunk immune cell filtration](vignettes/figures/immune_cell_filtration_1.png)
 
 After we have calculated a persistence diagram for each image, we then can associate these persistence diagrams with an outcome. To do this, we use a kernel machine regression framework. For this, we need to construct a kernel matrix which quantifies the similarities among pairs of persistence diagrams. To obtain a kernel matrix, we first start by calculating a pairwise dissimilarity matrix. The process then is:
 
