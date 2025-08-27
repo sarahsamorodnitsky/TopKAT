@@ -260,7 +260,9 @@ pd1 + pd2 +
   plot_layout(ncol = 2, nrow = 2)
 ```
 
-![plot of chunk immune cell filtration](vignettes/figures/immune_cell_filtration_1.png)
+```{r}
+knitr::include_graphics("vignettes/figures/immune_cell_filtration_1.png", error = FALSE)
+```
 
 After we have calculated a persistence diagram for each image, we then can associate these persistence diagrams with an outcome. To do this, we use a kernel machine regression framework. For this, we need to construct a kernel matrix which quantifies the similarities among pairs of persistence diagrams. To obtain a kernel matrix, we first start by calculating a pairwise dissimilarity matrix. The process then is:
 
