@@ -354,9 +354,9 @@ diagram, which are visualized below.</p>
 <span><span class="va">pd1</span> <span class="op">+</span> <span class="va">pd2</span> <span class="op">+</span> </span>
 <span>  <span class="va">pd3</span> <span class="op">+</span> <span class="va">pd4</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<div class="float">
-<img src="articles/figures/immune_cell_filtration_1.png" alt="plot of chunk immune cell filtration"><div class="figcaption">plot of chunk immune cell filtration</div>
-</div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="st">"vignettes/figures/immune_cell_filtration_1.png"</span>, error <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="articles/figures/immune_cell_filtration_1.png"><!-- --></p>
 <p>After we have calculated a persistence diagram for each image, we
 then can associate these persistence diagrams with an outcome. To do
 this, we use a kernel machine regression framework. For this, we need to
@@ -378,7 +378,7 @@ our pairwise
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>38</mn><mo>×</mo><mn>38</mn></mrow><annotation encoding="application/x-tex">38\times 38</annotation></semantics></math>
 distance matrices. Then we iterate through all the pairs of persistence
 diagrams and calculate the distance between them.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create all pairs of samples</span></span>
 <span><span class="va">pairs</span> <span class="op">&lt;-</span> <span class="fu">gtools</span><span class="fu">::</span><span class="fu">combinations</span><span class="op">(</span>n <span class="op">=</span> <span class="va">n</span>, r <span class="op">=</span> <span class="fl">2</span>, v <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">PIDs</span><span class="op">)</span>, repeats.allowed <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
@@ -1140,7 +1140,7 @@ in our test.</p>
 <p>The resulting kernel association testing p-value is printed below. We
 observed a significant association in the topological structures among
 immune cells and overall survival.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Convert the distance matrices to symmetric matrices</span></span>
 <span><span class="va">dist.mat.deg0</span> <span class="op">&lt;-</span> <span class="va">dist.mat.deg0</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">dist.mat.deg0</span><span class="op">)</span></span>
 <span><span class="va">dist.mat.deg1</span> <span class="op">&lt;-</span> <span class="va">dist.mat.deg1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">dist.mat.deg1</span><span class="op">)</span></span>
@@ -1186,7 +1186,7 @@ binary outcome in our kernel test.</p>
 to just samples within each class considered in the comparison. We print
 out the resulting p-values, which all show significant differences in
 the topological structure between biopsy classes.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># First, do pairwise comparisons of each group --</span></span>
 <span></span>
 <span><span class="co"># 0/1</span></span>
