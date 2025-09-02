@@ -23,7 +23,7 @@ Example usage of `TopKAT` to analyze data is provided in two vignetes:
 
 1. `Getting Started`: illustrates the application of TopKAT to a simulated dataset containing contrived shapes.
 2. `Simulated Tissue`: illustrates the application of TopKAT to a dataset simulated using the `scSpatialSIM` package. [[1]](#1)
-3. `Application of TopKAT to a study of Triple Negative Breast Cancer`: reproduces the triple negative breast cancer analysis described in the main manuscript using data from [[2]] (#2)
+3. `Application of TopKAT to a study of Triple Negative Breast Cancer`: reproduces the triple negative breast cancer analysis described in the main manuscript using data from [[2]](#2)
 
 # References
 <a id="1">[1]</a> 
