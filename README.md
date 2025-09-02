@@ -23,8 +23,12 @@ Example usage of `TopKAT` to analyze data is provided in two vignetes:
 
 1. `Getting Started`: illustrates the application of TopKAT to a simulated dataset containing contrived shapes.
 2. `Simulated Tissue`: illustrates the application of TopKAT to a dataset simulated using the `scSpatialSIM` package. [[1]](#1)
+3. `Application of TopKAT to a study of Triple Negative Breast Cancer`: reproduces the triple negative breast cancer analysis described in the main manuscript using data from [[2]] (#2)
 
 # References
 <a id="1">[1]</a> 
-Soupir, A. C., et al. (2024). scSpatialSIM: a simulator of spatial single-cell molecular data. bioRxiv, 2024-02.
+Soupir, A. C., Wrobel, J., Creed, J. H., Ospina, O. E., Wilson, C. M., Manley, B. J., ... & Fridley, B. L. (2025). scSpatialSIM: a simulator of spatial single-cell molecular data. SoftwareX, 31, 102223.
+
+<a id="2">[2]</a> 
+Keren, L., Bosse, M., Marquez, D., Angoshtari, R., Jain, S., Varma, S., ... & Angelo, M. (2018). A structured tumor-immune microenvironment in triple negative breast cancer revealed by multiplexed ion beam imaging. Cell, 174(6), 1373-1387.
 
