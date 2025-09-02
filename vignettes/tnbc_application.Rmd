@@ -115,7 +115,7 @@ p1_ti + p2_ti +
   plot_layout(ncol = 2, nrow = 2)
 ```
 
-![plot of chunk visualizing some samples](vignettes/figures/visualizing_some_samples_1.png)
+![plot of chunk visualizing some samples](./figures/visualizing_some_samples_1.png)
 
 The goals of this analysis are two-fold. The first goal is to relate the topological structures among immune cells to overall patient survival. The second is to describe the distinctions among mixed, compartmentalized, and cold samples topologically.  For both goals, we focus on capturing the topological structures created by just the immune cells. 
 
@@ -176,7 +176,7 @@ p1_i + p2_i +
   plot_layout(ncol = 2, nrow = 2)
 ```
 
-![plot of chunk filtering to just immune cells and visualizing](vignettes/figures/filtering_to_just_immune_cells_and_visualizing_1.png)
+![plot of chunk filtering to just immune cells and visualizing](./figures/filtering_to_just_immune_cells_and_visualizing_1.png)
 
 # Applying TopKAT
 
@@ -259,6 +259,7 @@ pd1 + pd2 +
   pd3 + pd4 +
   plot_layout(ncol = 2, nrow = 2)
 ```
+![plot of immune cell persistence diagrams](./figures/immune_cell_filtration_1.png)
 
 ```{r}
 knitr::include_graphics("vignettes/figures/immune_cell_filtration_1.png", error = FALSE)
